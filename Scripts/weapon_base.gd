@@ -20,12 +20,13 @@ func find_nearest_enemy() -> Node2D:
 		return null
 		
 	var nearest: Node2D = null
-	var min_dist = INF
+	var closest_dist = INF
+	var max_range = 800.0
 	
 	for enemy in enemies:
 		var dist = global_position.distance_to(enemy.global_position)
-		if dist < min_dist:
-			min_dist = dist
+		if dist < closest_dist and dist <= max_range:
+			closest_dist = dist
 			nearest = enemy
 			
 	return nearest

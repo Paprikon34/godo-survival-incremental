@@ -20,3 +20,11 @@ shape = SubResource("RectangleShape2D_1")
 script = ExtResource("3_weapon")
 
 [node name="Camera2D" type="Camera2D" parent="."]
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+modulate = Color(0, 1, 0, 1)
+offset_left = -60.0
+offset_top = 70.0
+offset_right = 60.0
+offset_bottom = 85.0
+show_percentage = false

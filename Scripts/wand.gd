@@ -1,5 +1,8 @@
 extends "res://Scripts/weapon_base.gd"
 
+func _init():
+	damage = 15.0
+
 # Fires a projectile towards the mouse position
 
 const ProjectileScript = preload("res://Scripts/projectile.gd")

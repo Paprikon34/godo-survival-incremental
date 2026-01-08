@@ -37,10 +37,55 @@ layout_mode = 2
 font_size = 24
 text = "Start Game"
 
+[node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+layout_mode = 2
+font_size = 24
+text = "Settings"
+
 [node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
 layout_mode = 2
 font_size = 24
 text = "Quit"
 
+[node name="SettingsPanel" type="Panel" parent="."]
+visible = false
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -150.0
+offset_top = -100.0
+offset_right = 150.0
+offset_bottom = 100.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="SettingsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+alignment = 1
+
+[node name="DebugCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Debug Console"
+
+[node name="CheatsCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Enable Cheats"
+
+[node name="BackButton" type="Button" parent="SettingsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Back"
+
 [connection signal="pressed" from="CenterContainer/VBoxContainer/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="CenterContainer/VBoxContainer/SettingsButton" to="." method="_on_settings_button_pressed"]
 [connection signal="pressed" from="CenterContainer/VBoxContainer/QuitButton" to="." method="_on_quit_button_pressed"]
+[connection signal="toggled" from="SettingsPanel/VBoxContainer/DebugCheck" to="." method="_on_debug_check_toggled"]
+[connection signal="toggled" from="SettingsPanel/VBoxContainer/CheatsCheck" to="." method="_on_cheats_check_toggled"]
+[connection signal="pressed" from="SettingsPanel/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

@@ -8,6 +8,10 @@
 
 config_version=5
 
+[autoload]
+
+Global="*res://Scripts/global.gd"
+
 [application]
 
 config/name="test antigravity"
