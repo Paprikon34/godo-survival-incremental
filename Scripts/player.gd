@@ -1,9 +1,10 @@
-extends CharacterBody2D
+signal level_up
 
 @export var speed: float = 200.0
 @export var health: float = 100.0
 @export var experience: float = 0.0
 @export var level: int = 1
+@export var damage_multiplier: float = 1.0
 
 func _physics_process(delta):
 	var direction = Input.get_vector("ui_left", "ui_right", "ui_up", "ui_down")
@@ -12,20 +13,21 @@ func _physics_process(delta):
 
 func take_damage(amount: float):
 	health -= amount
-	print("Player took damage: ", amount, " Current health: ", health)
+	# print("Player took damage: ", amount, " Current health: ", health) # Commented out spam
 	if health <= 0:
 		die()
 
 func gain_xp(amount: float):
 	experience += amount
-	print("Gained XP: ", amount)
+	# print("Gained XP: ", amount)
 	# Simple leveling logic for now
 	if experience >= level * 100:
-		level_up()
+		_trigger_level_up()
 
-func level_up():
+func _trigger_level_up():
 	experience -= level * 100
 	level += 1
+	emit_signal("level_up")
 	print("Level Up! New Level: ", level)
 
 func die():
