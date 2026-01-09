@@ -14,7 +14,8 @@ func _spawn_projectile(target: Node2D, index: int):
 	if not is_instance_valid(target):
 		return # Target might have died
 		
-	var projectile = CharacterBody2D.new()
+	var projectile = Area2D.new()
+	projectile.monitorable = false
 	# Add components to projectile programmatically
 	
 	var sprite = Sprite2D.new()
@@ -46,12 +47,17 @@ func _spawn_projectile(target: Node2D, index: int):
 	# Apply damage multiplier
 	var player = get_parent()
 	var dmg_mult = 1.0
-	if player and "damage_multiplier" in player:
-		dmg_mult = player.damage_multiplier
+	var pierce = 0
+	if player:
+		if "damage_multiplier" in player:
+			dmg_mult = player.damage_multiplier
+		if "piercing_count" in player:
+			pierce = player.piercing_count
 
 	projectile.set("direction", direction)
 	projectile.set("speed", projectile_speed)
 	projectile.set("damage", damage * dmg_mult)
+	projectile.set("pierce_count", pierce)
 	
 	# Set projectile collision mask to 2 (Enemy layer)
 	projectile.collision_mask = 2

@@ -10,6 +10,7 @@ signal level_up
 @export var damage_multiplier: float = 1.0
 @export var xp_multiplier: float = 1.0
 @export var luck_multiplier: float = 1.0
+@export var piercing_count: int = 0
 @export var regeneration: float = 0.5 # HP per second
 
 var regen_timer: float = 0.0

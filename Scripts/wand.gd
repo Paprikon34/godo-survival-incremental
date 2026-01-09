@@ -23,7 +23,10 @@ func _process(delta):
 func fire_at_mouse():
 	var mouse_pos = get_global_mouse_position()
 	
-	var projectile = CharacterBody2D.new()
+	var projectile = Area2D.new()
+	# Optimization: We only need detection, not to be detected
+	projectile.monitorable = false
+	
 	var sprite = Sprite2D.new()
 	sprite.texture = load("res://icon.svg")
 	sprite.scale = Vector2(0.2, 0.4)
@@ -46,12 +49,17 @@ func fire_at_mouse():
 	# Apply damage multiplier from player if possible
 	var player = get_parent()
 	var dmg_mult = 1.0
-	if player and "damage_multiplier" in player:
-		dmg_mult = player.damage_multiplier
+	var pierce = 0
+	if player: 
+		if "damage_multiplier" in player:
+			dmg_mult = player.damage_multiplier
+		if "piercing_count" in player:
+			pierce = player.piercing_count
 		
 	projectile.set("direction", direction)
 	projectile.set("speed", projectile_speed * 1.2)
 	projectile.set("damage", damage * dmg_mult)
+	projectile.set("pierce_count", pierce)
 	projectile.collision_mask = 2
 	projectile.collision_layer = 0
 	

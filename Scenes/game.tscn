@@ -1,13 +1,13 @@
-[gd_scene load_steps=7 format=3 uid="uid://d0l4m5n6o7r8"]
+[gd_scene load_steps=10 format=3 uid="uid://d0l4m5n6o7r8"]
 
 [ext_resource type="Script" uid="uid://cfmvf1rjdday1" path="res://Scripts/game.gd" id="1_script"]
 [ext_resource type="PackedScene" uid="uid://b8j2k1m3n4p5" path="res://Scenes/player.tscn" id="2_player"]
+[ext_resource type="PackedScene" uid="uid://boss1m2n3p4q" path="res://Scenes/boss.tscn" id="3_boss"]
 [ext_resource type="PackedScene" uid="uid://dak3l2m4n5q6" path="res://Scenes/enemy.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" uid="uid://dak3l2m4n5q7" path="res://Scenes/fast_enemy.tscn" id="3_fast_enemy"]
-[ext_resource type="PackedScene" path="res://Scenes/boss.tscn" id="3_boss"]
-[ext_resource type="PackedScene" uid="uid://eak3l2m4n5q8" path="res://Scenes/tank_enemy.tscn" id="3_tank"]
 [ext_resource type="PackedScene" path="res://Scenes/splitting_boss.tscn" id="3_splitting_boss"]
 [ext_resource type="PackedScene" path="res://Scenes/splitting_enemy.tscn" id="3_splitting_enemy"]
+[ext_resource type="PackedScene" uid="uid://eak3l2m4n5q8" path="res://Scenes/tank_enemy.tscn" id="3_tank"]
 [ext_resource type="Script" uid="uid://d3ptyr26luidn" path="res://Scripts/grid_background.gd" id="4_bg"]
 
 [node name="Game" type="Node2D"]
@@ -209,7 +209,7 @@ theme_override_font_sizes/font_size = 12
 text = "Force Spawn Enemy"
 
 [node name="DetailedUpgradeList" type="VBoxContainer" parent="CanvasLayer/UI"]
-anchors_preset = 3
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -223,7 +223,7 @@ grow_vertical = 0
 alignment = 2
 
 [node name="UpgradeList" type="VBoxContainer" parent="CanvasLayer/UI"]
-anchors_preset = 3
+layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
@@ -239,7 +239,7 @@ alignment = 2
 [node name="ChestRewardPopup" type="Panel" parent="CanvasLayer/UI"]
 visible = false
 custom_minimum_size = Vector2(300, 200)
-anchors_preset = 8
+layout_mode = 0
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
@@ -270,6 +270,7 @@ anchor_bottom = 0.5
 offset_top = -20.0
 offset_bottom = 20.0
 grow_horizontal = 2
+grow_vertical = 2
 text = "+1 Level"
 horizontal_alignment = 1
 vertical_alignment = 1
@@ -287,6 +288,7 @@ offset_top = -40.0
 offset_right = 30.0
 offset_bottom = -10.0
 grow_horizontal = 2
+grow_vertical = 0
 text = "OK"
 
 [node name="StatsPanel" type="Panel" parent="CanvasLayer/UI"]

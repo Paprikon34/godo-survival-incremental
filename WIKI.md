@@ -41,6 +41,7 @@ Fires purple projectiles directly towards your mouse cursor.
 | **Smart** | Increases XP Gain by **+10%**. |
 | **Vitality** | Increases Max Health by **+10%**. |
 | **Luck** | Increases Luck by **+10%**. |
+| **Piercing** | Projectiles pierce **+1 Enemy**. |
 | **Despair** | Enemies get **+5% Speed/HP**, but you get **+10% XP**. |
 
 ---
