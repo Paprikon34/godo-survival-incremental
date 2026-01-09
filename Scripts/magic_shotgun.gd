@@ -1,6 +1,7 @@
 extends "res://Scripts/weapon_base.gd"
 
-# We could use a packed scene for the projectile, but I'll draw it or make a simple node for now
+# Primary weapon: Magic Shotgun
+# Fires multiple projectiles in a spread pattern.
 const ProjectileScript = preload("res://Scripts/projectile.gd")
 
 var projectile_count: int = 1
@@ -31,6 +32,7 @@ func _spawn_projectile(target: Node2D, index: int):
 	# Add script
 	projectile.set_script(ProjectileScript)
 	
+	projectile.process_mode = Node.PROCESS_MODE_PAUSABLE
 	projectile.global_position = global_position
 	
 	# Apply spread if multiple

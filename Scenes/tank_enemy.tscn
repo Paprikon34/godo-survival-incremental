@@ -8,11 +8,12 @@ size = Vector2(100, 100)
 
 [node name="Enemy" type="CharacterBody2D" groups=["enemy"]]
 collision_layer = 2
-collision_mask = 3
+collision_mask = 1
 script = ExtResource("1_script")
 speed = 60.0
 health = 30.0
 damage = 15.0
+xp_reward = 25.0
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
 modulate = Color(0.2, 0.8, 0.2, 1)

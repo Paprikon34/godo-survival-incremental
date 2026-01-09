@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Resources/Types/EnemyData.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://Scenes/enemy.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+name = "Void Shard"
+scene = ExtResource("2_scene")
+health = 10.0
+speed = 100.0
+xp_reward = 10.0
+is_boss = false

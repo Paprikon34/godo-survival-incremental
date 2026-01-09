@@ -38,6 +38,7 @@ func fire_at_mouse():
 	
 	projectile.set_script(ProjectileScript)
 	
+	projectile.process_mode = Node.PROCESS_MODE_PAUSABLE
 	projectile.global_position = global_position
 	
 	var direction = (mouse_pos - global_position).normalized()

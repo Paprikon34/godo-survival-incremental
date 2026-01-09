@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://Scripts/player.gd" id="1_script"]
 [ext_resource type="Texture2D" path="res://icon.svg" id="2_icon"]
-[ext_resource type="Script" path="res://Scripts/magic_missile.gd" id="3_weapon"]
+[ext_resource type="Script" path="res://Scripts/magic_shotgun.gd" id="3_weapon"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 120)
@@ -16,7 +16,7 @@ texture = ExtResource("2_icon")
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("RectangleShape2D_1")
 
-[node name="MagicMissile" type="Node2D" parent="."]
+[node name="MagicShotgun" type="Node2D" parent="."]
 script = ExtResource("3_weapon")
 
 [node name="Camera2D" type="Camera2D" parent="."]

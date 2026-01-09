@@ -1,19 +1,37 @@
 extends Node2D
 
+@export var enemy_scene: PackedScene
+@export var fast_enemy_scene: PackedScene
 @export var tank_enemy_scene: PackedScene
-@export var spawn_interval_initial: float = 2.0
-@export var spawn_interval_min: float = 0.4
-@export var spawn_interval_ramp_time: float = 600.0 # 10 minutes to reach min interval
-var spawn_interval: float = 2.0
+@export var elite_enemy_scene: PackedScene
+@export var boss_scene: PackedScene
+@export var boss_2_scene: PackedScene
+@export var elite_boss_scene: PackedScene
+@export var splitting_boss_scene: PackedScene
+@export var splitting_enemy_scene: PackedScene
 
-var enemy_speed_multiplier: float = 1.0
-var enemy_health_multiplier: float = 1.0
+var WAVE_DATA = [
+	{ "time": 0, "interval": 2.0, "enemies": ["basic"] },
+	{ "time": 90, "type": "boss", "enemies": ["boss_1"] }, # Boss 1:30
+	{ "time": 95, "interval": 1.5, "enemies": ["basic"] },
+	{ "time": 120, "interval": 1.5, "enemies": ["basic", "fast"] }, # Fast at 2m
+	{ "time": 180, "type": "boss", "enemies": ["boss_2"] }, # Boss 3m
+	{ "time": 185, "interval": 1.2, "enemies": ["basic", "fast", "tank"] }, # Tank at 3m
+	{ "time": 240, "type": "boss", "enemies": ["elite_boss"] }, # Boss 4m
+	{ "time": 245, "interval": 1.0, "enemies": ["basic", "fast", "tank"] },
+	{ "time": 300, "type": "boss", "enemies": ["splitting_boss"] }, # Boss 5m
+	{ "time": 305, "interval": 0.8, "enemies": ["elite", "tank", "fast", "splitting_enemy"] } # Elite + Splitting at 5m+
+]
 
 var spawn_timer: float = 0.0
+var boss_spawned_at = [] # Times we spawned a boss to avoid duplicates
+var active_wave_data = null
+var enemy_speed_multiplier: float = 1.0
+var enemy_health_multiplier: float = 1.0
 var screen_size: Vector2
-var boss_spawned: bool = false
-var boss_2_spawned: bool = false
 var level_up_hp_bonus: float = 0.0
+var level_ups_pending: int = 0
+var active_bosses = []
 
 
 
@@ -23,6 +41,7 @@ var level_up_hp_bonus: float = 0.0
 
 # New UI References
 @onready var time_label = $CanvasLayer/UI/TimeLabel
+@onready var fps_label = $CanvasLayer/UI/FPSLabel
 @onready var xp_bar = $CanvasLayer/UI/XPBar
 @onready var pause_menu = $CanvasLayer/UI/PauseMenu
 @onready var stats_panel = $CanvasLayer/UI/StatsPanel
@@ -48,12 +67,21 @@ var upgrade_counts = {}
 @onready var chest_ok_button = $CanvasLayer/UI/ChestRewardPopup/OkButton
 @onready var debug_console = $CanvasLayer/UI/DebugConsole
 @onready var debug_log_label = $CanvasLayer/UI/DebugConsole/ScrollContainer/LogLabel
+@onready var boss_bar_container = $CanvasLayer/UI/BossBarContainer
+@onready var enemy_count_label = $CanvasLayer/UI/DebugConsole/EnemyCountLabel
+@onready var cheat_menu = $CanvasLayer/UI/CheatMenu
+@onready var god_button = $CanvasLayer/UI/CheatMenu/GodModeToggle
+@onready var dmg_button = $CanvasLayer/UI/CheatMenu/SuperDamageToggle
+@onready var reset_button = $CanvasLayer/UI/CheatMenu/ResetTimer
 
 func _ready():
 	screen_size = get_viewport_rect().size
 	if player:
 		player.level_up.connect(_on_level_up)
 		player.process_mode = Node.PROCESS_MODE_PAUSABLE
+		
+	if fps_label:
+		fps_label.visible = Global.fps_enabled
 	
 	for i in range(option_buttons.size()):
 		option_buttons[i].pressed.connect(_on_upgrade_selected.bind(i))
@@ -65,6 +93,24 @@ func _ready():
 	if Global.debug_enabled:
 		Global.log_emitted.connect(_on_log_emitted)
 		
+	# Cheat Menu Init
+	cheat_menu.visible = Global.cheats_enabled
+	if Global.cheats_enabled:
+		$CanvasLayer/UI/CheatMenu/SkipTime1.pressed.connect(_on_skip_time_1)
+		$CanvasLayer/UI/CheatMenu/SkipTime2.pressed.connect(_on_skip_time_2)
+		$CanvasLayer/UI/CheatMenu/SkipTime3.pressed.connect(_on_skip_time_3)
+		$CanvasLayer/UI/CheatMenu/SkipTime4.pressed.connect(_on_skip_time_4)
+		$CanvasLayer/UI/CheatMenu/SkipTime5.pressed.connect(_on_skip_time_5)
+		$CanvasLayer/UI/CheatMenu/SkipTime6.pressed.connect(_on_skip_time_6)
+		$CanvasLayer/UI/CheatMenu/SkipTime7.pressed.connect(_on_skip_time_7)
+		$CanvasLayer/UI/CheatMenu/SkipTime8.pressed.connect(_on_skip_time_8)
+		$CanvasLayer/UI/CheatMenu/SkipTime9.pressed.connect(_on_skip_time_9)
+		god_button.pressed.connect(_on_god_mode_toggle)
+		dmg_button.pressed.connect(_on_super_damage_toggle)
+		$CanvasLayer/UI/CheatMenu/ResetTimer.pressed.connect(_on_reset_timer)
+		$CanvasLayer/UI/CheatMenu/ForceSpawn.pressed.connect(_on_force_spawn)
+		Global.log("CHEATS ENABLED!")
+		
 	level_up_menu.process_mode = Node.PROCESS_MODE_ALWAYS
 	pause_menu.process_mode = Node.PROCESS_MODE_ALWAYS
 	stats_panel.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -72,6 +118,13 @@ func _ready():
 	process_mode = Node.PROCESS_MODE_ALWAYS
 
 func _on_level_up():
+	level_ups_pending += 1
+	if level_up_menu.visible:
+		return
+		
+	_show_level_up_menu()
+
+func _show_level_up_menu():
 	get_tree().paused = true
 	
 	# Increase enemy base difficulty
@@ -80,6 +133,8 @@ func _on_level_up():
 	for enemy in enemies:
 		if "health" in enemy:
 			enemy.health += 0.5
+		if "max_health" in enemy:
+			enemy.max_health += 0.5
 	Global.log("Level Up! Enemies gain +0.5 Max HP (Total bonus: +" + str(level_up_hp_bonus) + ")")
 	
 	var num_choices = 3
@@ -122,9 +177,16 @@ func _on_upgrade_selected(index: int):
 		update_upgrade_list_ui()
 		update_detailed_upgrade_list()
 		
-	level_up_menu.visible = false
-	get_tree().paused = false
-	set_ui_state_paused(false)
+		Global.log("Upgrade selected: " + id)
+		
+	level_ups_pending -= 1
+	
+	if level_ups_pending > 0:
+		_show_level_up_menu()
+	else:
+		level_up_menu.visible = false
+		get_tree().paused = false
+		set_ui_state_paused(false)
 
 func update_upgrade_list_ui():
 	# Clear current list
@@ -167,7 +229,7 @@ func update_detailed_upgrade_list():
 		
 		var desc = ""
 		match id:
-			"multishot": desc = "+%d Projectiles" % [lvl]
+			"magic_shotgun": desc = "+%d Projectiles" % [lvl]
 			"smart": desc = "+%d%% XP Gain" % [lvl * 10]
 			"speed": desc = "+%d%% Move Speed" % [lvl * 10]
 			"damage": desc = "+%d%% Damage" % [lvl * 10]
@@ -193,10 +255,12 @@ func on_chest_collected():
 	if available_upgrades.size() > 0:
 		var num_rewards = 1
 		var luck_chance = 0.05 + (player.luck_multiplier - 1.0)
-		if randf() < luck_chance:
-			num_rewards = 2
-		if randf() < luck_chance * 0.2:
+		var roll = randf()
+		
+		if roll < luck_chance * 0.2:
 			num_rewards = 3
+		elif roll < luck_chance:
+			num_rewards = 2
 			
 		if num_rewards > 1:
 			Global.log("Lucky! Chest contains %d rewards." % num_rewards)
@@ -286,27 +350,46 @@ func _process(delta):
 	if get_tree().paused:
 		return
 		
+	if fps_label.visible:
+		var fps = Engine.get_frames_per_second()
+		fps_label.text = "FPS: %d" % fps
+		if fps > 55:
+			fps_label.modulate = Color.GREEN
+		elif fps < 25:
+			fps_label.modulate = Color.RED
+		else:
+			fps_label.modulate = Color.YELLOW
+		
 	elapsed_time += delta
-	# Calculate dynamic spawn interval
-	var progress = min(elapsed_time / spawn_interval_ramp_time, 1.0)
-	spawn_interval = lerp(spawn_interval_initial, spawn_interval_min, progress)
+	spawn_timer += delta
+		
+	# 1. Wave Switching (Dictionary based)
+	var best_wave = null
+	for wave in WAVE_DATA:
+		if elapsed_time >= wave.time:
+			best_wave = wave
+	
+	if active_wave_data != best_wave:
+		active_wave_data = best_wave
+		Global.log("WAVE CHANGED. Time: " + str(active_wave_data.time))
+		
+		# Boss Check (One-shot)
+		if active_wave_data.get("type") == "boss":
+			if not boss_spawned_at.has(active_wave_data.time):
+				boss_spawned_at.append(active_wave_data.time)
+				var type = active_wave_data.enemies[0]
+				spawn_enemy_by_type(type)
 
-	if spawn_timer >= spawn_interval:
-		spawn_timer = 0.0
-		spawn_enemy()
-		
-	# Boss Spawn Check
-	if elapsed_time > 90.0 and not boss_spawned and boss_scene: # 1:30
-		boss_spawned = true
-		spawn_boss(1.0)
-		
-	if elapsed_time > 180.0 and not boss_2_spawned and boss_scene: # 3:00
-		boss_2_spawned = true
-		spawn_boss(3.0)
-		Global.log("BOSS 2 SPAWNED!")
-		
-	# Update UI
-	if not time_label: # Safety check if node not ready yet
+	# 2. Spawning Logic (Standard enemies)
+	if active_wave_data and active_wave_data.get("type") != "boss":
+		var interval = active_wave_data.get("interval", 2.0)
+		if spawn_timer >= interval:
+			spawn_timer = 0.0
+			var type = active_wave_data.enemies.pick_random()
+			spawn_enemy_by_type(type)
+	
+	# 3. UI Update Safety
+	if not time_label:
 		return
 
 	var minutes = int(elapsed_time / 60)
@@ -323,32 +406,69 @@ func _process(delta):
 		# Keep debug label for stats
 		label.text = "HP: %d | Lvl: %d" % [player.health, player.level]
 
-
-
-func spawn_boss(health_mult: float = 1.0):
-	# Note: We don't set boss_spawned here anymore to allow multiple calls, 
-	# or we manage flags in _process. Let's just spawn it.
-	var boss = boss_scene.instantiate()
-	boss.process_mode = Node.PROCESS_MODE_PAUSABLE
+	# Boss Bar Logic
+	if active_bosses.size() > 0:
+		active_bosses = active_bosses.filter(func(e): return is_instance_valid(e))
 	
-	# Apply global Despair multipliers
-	if "speed" in boss:
-		boss.speed *= enemy_speed_multiplier
-	if "health" in boss:
-		boss.health += level_up_hp_bonus
-		boss.health *= enemy_health_multiplier
+	for child in boss_bar_container.get_children():
+		child.queue_free()
 		
-	# Apply specific Boss multiplier (e.g. 1.0 or 3.0)
-	boss.health *= health_mult
+	if active_bosses.size() > 0:
+		boss_bar_container.visible = true
+		for boss in active_bosses:
+			var bar_panel = Panel.new()
+			bar_panel.custom_minimum_size = Vector2(0, 25)
+			boss_bar_container.add_child(bar_panel)
+			
+			var bar = ProgressBar.new()
+			bar.modulate = Color(1, 0, 0, 1)
+			bar.show_percentage = false
+			bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			if "max_health" in boss:
+				bar.max_value = boss.max_health
+			if "health" in boss:
+				bar.value = boss.health
+			bar_panel.add_child(bar)
+			
+			var name_label = Label.new()
+			name_label.text = "BOSS"
+			name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+			name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+			name_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+			name_label.add_theme_font_size_override("font_size", 12)
+			name_label.add_theme_constant_override("outline_size", 4)
+			name_label.add_theme_color_override("font_outline_color", Color(0,0,0,1))
+			bar_panel.add_child(name_label)
+	else:
+		boss_bar_container.visible = false
+
+	# Performance: Enemy Culling & Debug Info
+	var all_enemies = get_tree().get_nodes_in_group("enemy")
+	if Global.debug_enabled and enemy_count_label:
+		enemy_count_label.text = "Enemies: %d" % all_enemies.size()
 	
-	# Boss logic (spawn far away)
-	var angle = randf() * PI * 2
-	var radius = screen_size.length() / 1.5
-	var spawn_pos = $Player.global_position + Vector2(cos(angle), sin(angle)) * radius
-	
-	boss.global_position = spawn_pos
-	add_child(boss)
-	Global.log("BOSS SPAWNED!")
+	# Cull distant enemies (every N frames or every frame if small count)
+	for enemy in all_enemies:
+		if not is_instance_valid(enemy): continue
+		if enemy in active_bosses: continue # Don't cull bosses!
+		
+		var dist_sq = player.global_position.distance_squared_to(enemy.global_position)
+		if dist_sq > 4000000: # 2000px squared (keeping it tighter than 3000 to be safe)
+			enemy.queue_free()
+
+
+
+
+func add_active_boss(boss: Node2D):
+	if not active_bosses.has(boss):
+		active_bosses.append(boss)
+		if not boss.is_connected("tree_exited", _on_boss_tree_exited):
+			boss.tree_exited.connect(_on_boss_tree_exited.bind(boss))
+		Global.log("BOSS REGISTERED!")
+
+func _on_boss_tree_exited(boss):
+	active_bosses.erase(boss)
+	Global.log("BOSS DEFEATED/REMOVED")
 
 func update_all_enemies():
 	var enemies = get_tree().get_nodes_in_group("enemy")
@@ -358,28 +478,72 @@ func update_all_enemies():
 			enemy.speed *= 1.05
 		if "health" in enemy:
 			enemy.health *= 1.05
+		if "max_health" in enemy:
+			enemy.max_health *= 1.05
 	Global.log("Instant Buff: All current enemies speed/HP increased by 5%!")
 
-func spawn_enemy():
-	if not enemy_scene:
+func spawn_enemy_by_type(type: String):
+	var scene: PackedScene = null
+	var is_boss: bool = false
+	var enemy_name: String = "Enemy"
+	var stats_path: String = ""
+	
+	match type:
+		"basic": 
+			scene = enemy_scene
+			enemy_name = "Basic Enemy"
+			stats_path = "res://Resources/Data/Enemies/basic_enemy.tres"
+		"fast": 
+			scene = fast_enemy_scene
+			enemy_name = "Fast Enemy"
+			stats_path = "res://Resources/Data/Enemies/fast_enemy.tres"
+		"tank": 
+			scene = tank_enemy_scene
+			enemy_name = "Tank Enemy"
+			stats_path = "res://Resources/Data/Enemies/tank_enemy.tres"
+		"elite": 
+			scene = elite_enemy_scene
+			enemy_name = "Elite Enemy"
+			stats_path = "res://Resources/Data/Enemies/elite_enemy.tres"
+		"boss_1": 
+			scene = boss_scene
+			is_boss = true
+			enemy_name = "Boss I"
+			stats_path = "res://Resources/Data/Bosses/boss_1_data.tres"
+		"boss_2": 
+			scene = boss_2_scene
+			if not scene: scene = boss_scene # Fallback to boss 1 scene
+			is_boss = true
+			enemy_name = "Boss II"
+			stats_path = "res://Resources/Data/Bosses/boss_2_data.tres"
+		"elite_boss": 
+			scene = elite_boss_scene
+			if not scene: scene = boss_scene
+			is_boss = true
+			enemy_name = "Elite Boss"
+			stats_path = "res://Resources/Data/Bosses/elite_boss_data.tres"
+		"splitting_boss": 
+			scene = splitting_boss_scene
+			is_boss = true
+			enemy_name = "Void Splitter"
+			stats_path = "res://Resources/Data/Bosses/splitting_boss_data.tres"
+		"splitting_enemy":
+			scene = splitting_enemy_scene
+			enemy_name = "Splitting Enemy"
+			stats_path = "res://Resources/Data/Enemies/splitting_enemy.tres"
+
+	if not scene: 
+		Global.log("Error: Scene not found for type " + type)
 		return
 		
-	var chosen_scene = enemy_scene
-	
-	# Randomly pick enemy based on time
-	var rand = randf()
-	
-	if elapsed_time > 180.0 and tank_enemy_scene: # 3 minutes
-		if rand < 0.2: # 20% for tank
-			chosen_scene = tank_enemy_scene
-		elif rand < 0.5: # 30% for fast (0.2 to 0.5)
-			chosen_scene = fast_enemy_scene
-	elif elapsed_time > 120.0 and fast_enemy_scene: # 2 minutes
-		if rand < 0.3: # 30% for fast
-			chosen_scene = fast_enemy_scene
-
-	var enemy = chosen_scene.instantiate()
+	var enemy = scene.instantiate()
 	enemy.process_mode = Node.PROCESS_MODE_PAUSABLE
+	
+	# Load and assign stats if available
+	if stats_path != "" and FileAccess.file_exists(stats_path):
+		var s = load(stats_path)
+		if s:
+			enemy.set("stats", s)
 	
 	# Apply multipliers
 	if "speed" in enemy:
@@ -388,16 +552,89 @@ func spawn_enemy():
 		enemy.health += level_up_hp_bonus
 		enemy.health *= enemy_health_multiplier
 	
-	# Spawn outside the screen (simple logic)
-	# Pick a random angle and a distance greater than half screen diagonal
+	# Spawn location (Just outside the screen boundary)
 	var angle = randf() * PI * 2
-	var radius = screen_size.length() / 1.5
-	var spawn_pos = $Player.global_position + Vector2(cos(angle), sin(angle)) * radius
+	var radius = (screen_size.length() / 2.0) + 100.0 # Just beyond the furthest corner
+	var spawn_pos = player.global_position + Vector2(cos(angle), sin(angle)) * radius
 	
 	enemy.global_position = spawn_pos
 	add_child(enemy)
-	Global.log("Spawned Enemy (HP: " + str(enemy.health) + ")")
+	
+	if is_boss:
+		add_active_boss(enemy)
+		Global.log("BOSS SPAWNED: " + enemy_name)
+	else:
+		Global.log("Spawned " + enemy_name)
+
+func spawn_from_wave(wave: Resource):
+	Global.log("Error: spawn_from_wave called (DEPRECATED)")
 
 func _on_log_emitted(text: String):
 	if debug_log_label:
 		debug_log_label.text += "\n" + text
+
+# --- Cheat Functions ---
+
+func _on_skip_time_1():
+	elapsed_time = 89.0
+	Global.log("Cheat: Skipped to 1:29")
+
+func _on_skip_time_2():
+	elapsed_time = 179.0
+	Global.log("Cheat: Skipped to 2:59")
+
+func _on_skip_time_3():
+	elapsed_time = 239.0
+	Global.log("Cheat: Skipped to 3:59")
+
+func _on_skip_time_4():
+	elapsed_time = 299.0
+	Global.log("Cheat: Skipped to 4:59")
+
+func _on_skip_time_5():
+	elapsed_time = 359.0
+	Global.log("Cheat: Skipped to 5:59")
+
+func _on_skip_time_6():
+	elapsed_time = 419.0
+	Global.log("Cheat: Skipped to 6:59")
+
+func _on_skip_time_7():
+	elapsed_time = 479.0
+	Global.log("Cheat: Skipped to 7:59")
+
+func _on_skip_time_8():
+	elapsed_time = 539.0
+	Global.log("Cheat: Skipped to 8:59")
+
+func _on_skip_time_9():
+	elapsed_time = 599.0
+	Global.log("Cheat: Skipped to 9:59")
+
+func _on_god_mode_toggle():
+	player.is_god_mode = not player.is_god_mode
+	god_button.text = "God Mode: " + ("ON" if player.is_god_mode else "OFF")
+	Global.log("Cheat: God Mode " + god_button.text)
+
+func _on_super_damage_toggle():
+	if player.damage_multiplier < 900.0:
+		player.damage_multiplier = 1000.0
+		dmg_button.text = "Super Damage: ON"
+	else:
+		player.damage_multiplier = 1.0
+		dmg_button.text = "Super Damage: OFF"
+	Global.log("Cheat: " + dmg_button.text)
+
+func _on_reset_timer():
+	elapsed_time = 0.0
+	spawn_timer = 0.0
+	active_wave_data = null
+	Global.log("Cheat: Timer Reset")
+
+func _on_force_spawn():
+	if active_wave_data:
+		Global.log("Manual Spawn Triggered")
+		var type = active_wave_data.enemies.pick_random()
+		spawn_enemy_by_type(type)
+	else:
+		Global.log("Manual Spawn Failed: No active wave data!")

@@ -22,9 +22,13 @@ func find_nearest_enemy() -> Node2D:
 	var nearest: Node2D = null
 	var closest_dist = INF
 	var max_range = 800.0
+	var y_multiplier = 1.5 # Increase to decrease top/bottom range
 	
 	for enemy in enemies:
-		var dist = global_position.distance_to(enemy.global_position)
+		var diff = enemy.global_position - global_position
+		# Elliptical distance check: (x^2 + (y*mult)^2)
+		var dist = sqrt(diff.x**2 + (diff.y * y_multiplier)**2)
+		
 		if dist < closest_dist and dist <= max_range:
 			closest_dist = dist
 			nearest = enemy

@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="WaveData" load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://Resources/Types/WaveData.gd" id="1_script"]
+[ext_resource type="Resource" path="res://Resources/Data/Enemies/elite_enemy.tres" id="2_elite"]
+[ext_resource type="Resource" path="res://Resources/Data/Enemies/fast_enemy.tres" id="3_fast"]
+
+[resource]
+script = ExtResource("1_script")
+start_time = 241.0
+spawn_interval = 1.0
+enemies = [ExtResource("2_elite"), ExtResource("3_fast")]

@@ -6,20 +6,24 @@ var damage: float = 0.0
 var lifetime: float = 5.0
 var has_hit: bool = false
 
+func _ready():
+	process_mode = Node.PROCESS_MODE_PAUSABLE
+
 func _physics_process(delta):
 	if has_hit: return
-	velocity = direction * speed
-	move_and_slide()
+	
+	var velocity_vec = direction * speed * delta
+	var collision = move_and_collide(velocity_vec)
 	
 	lifetime -= delta
 	if lifetime <= 0:
 		queue_free()
-	
-	for i in get_slide_collision_count():
-		var collision = get_slide_collision(i)
+		return
+
+	if collision:
 		var collider = collision.get_collider()
-		if collider.has_method("take_damage") and collider.is_in_group("enemy"):
+		if is_instance_valid(collider) and collider.is_in_group("enemy"):
 			has_hit = true
-			collider.take_damage(damage)
+			if collider.has_method("take_damage"):
+				collider.take_damage(damage)
 			queue_free()
-			return # Stop processing other collisions this frame

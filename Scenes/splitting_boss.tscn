@@ -1,0 +1,31 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://Scripts/splitting_boss.gd" id="1_script"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Resource" path="res://Resources/Data/Bosses/mini_boss.tres" id="3_mini"]
+[ext_resource type="PackedScene" path="res://Scenes/enemy.tscn" id="4_enemy"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
+size = Vector2(120, 120)
+
+[node name="SplittingBoss" type="CharacterBody2D" groups=["enemy"]]
+collision_layer = 2
+script = ExtResource("1_script")
+mini_boss_scene = ExtResource("4_enemy")
+mini_boss_stats = ExtResource("3_mini")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0.5, 0, 1, 1)
+scale = Vector2(1.2, 1.2)
+texture = ExtResource("2_icon")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("RectangleShape2D_1")
+
+[node name="HealthBar" type="ProgressBar" parent="."]
+modulate = Color(1, 0, 0, 1)
+offset_left = -60.0
+offset_top = -80.0
+offset_right = 60.0
+offset_bottom = -70.0
+show_percentage = false

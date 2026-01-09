@@ -35,6 +35,8 @@ func _physics_process(delta):
 	velocity = direction * speed
 	move_and_slide()
 
+var is_god_mode: bool = false
+
 func update_hp_bar():
 	if hp_bar:
 		hp_bar.max_value = max_health
@@ -42,6 +44,7 @@ func update_hp_bar():
 		hp_bar.visible = health < max_health
 
 func take_damage(amount: float):
+	if is_god_mode: return
 	health -= amount
 	update_hp_bar()
 	# print("Player took damage: ", amount, " Current health: ", health) # Commented out spam
@@ -64,4 +67,4 @@ func _trigger_level_up():
 func die():
 	Global.log("Player Died!")
 	# Reload scene or show game over
-	get_tree().reload_current_scene()
+	get_tree().call_deferred("reload_current_scene")

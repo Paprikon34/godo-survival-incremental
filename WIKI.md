@@ -21,7 +21,7 @@ Welcome to the official wiki! Here you can find all the details about weapons, u
 Fires blue projectiles at the nearest enemy within range.
 - **Base Damage**: 10
 - **Base Cooldown**: 1.0s
-- **Range**: 800px
+- **Range**: 800px (Elliptical: sides have full reach, top/bottom are shorter).
 - **Scaling**: Each level adds **+1 Projectile** (Shotgun spread).
 
 ### 🟪 Magic Wand (Unlockable)
@@ -53,17 +53,33 @@ The standard grunt.
 - **Health**: 10 (+0.5/lvl)
 - **Speed**: 100
 - **Damage**: 10 per collision
+- **XP Bounty**: 10
 
 ### 🟡 Fast Enemy
 Spawns after 2 minutes (30% chance).
 - **Health**: 5 (+0.5/lvl)
 - **Speed**: 300
 - **Damage**: 5 per collision
+- **XP Bounty**: 10
+
+### 🏰 Tank Enemy
+Spawns after 3 minutes (20% chance).
+- **Health**: 30 (+0.5/lvl)
+- **Speed**: 60
+- **Damage**: 15 per collision
+- **XP Bounty**: 25
+
+### 🟪 Splitting Enemy
+Spawns after 5 minutes.
+- **Health**: 50 (+0.5/lvl)
+- **Speed**: 90
+- **Ability**: Splits into 2 **Basic Enemies** upon death.
+- **XP Bounty**: 50
 
 ### 💀 Bosses
 Large red enemies that drop **Golden Chests**.
-- **Boss 1 (1:30)**: 100 HP, 80 Speed.
-- **Boss 2 (3:00)**: 300 HP, 80 Speed.
+- **Boss 1 (1:30)**: 100 HP, 80 Speed, **500 XP Bounty**.
+- **Boss 2 (3:00)**: 300 HP, 80 Speed, **500 XP Bounty**.
 
 ---
 
@@ -74,6 +90,11 @@ Dropped by Bosses. Grants a **free level** to one of your currently owned upgrad
 ### 📈 Scaling Difficulty
 1. **Level-Up**: Every time the player levels up, every enemy (current and future) gains **+0.5 HP**.
 2. **Despair**: Every level of Despair adds **+5% HP and Speed** to all enemies instantly.
+3. **🕒 Spawn Rate**: The spawn interval decreases linearly over time, reaching maximum difficulty at **10 minutes**.
+    - **Initial Rate**: 1 enemy every 2.0s
+    - **Final Rate (10m)**: 1 enemy every 0.4s
+    - **Ramp Time**: 600 seconds (10 minutes)
+    - **Spawn Distance**: ~730px from player (off-screen radius).
 
 ### 🍀 Luck Mechanics
 Luck multiplier (default 100%) increases the probability of "Lucky" events. There is a **5% base chance** for these events even at 100% Luck.
@@ -88,9 +109,26 @@ Luck multiplier (default 100%) increases the probability of "Lucky" events. Ther
 
 *Bonus Luck = (Your Luck Stat - 100%)*
 
+### 🌊 Waves & Spawning
+Spawning is handled via `WaveData` resources linked in the `MapData`.
+- **Wave 1 (0:00)**: Basic + Fast enemies.
+- **Wave 2 (1:30)**: **Boss I** appears.
+- **Wave 3 (3:00)**: **Boss II** appears.
+- **Wave 4 (4:00)**: **Elite Boss** (High HP, High Speed) appears.
+- **Wave 5 (5:00)**: **Void Splitter** (Special Boss) appears.
+    - **Ability**: Cellular Division. Splits into 4 Fragments at 50% HP.
+- **Post-5m**: **Elite Enemies** begin spawning frequently.
+
+
 ### 🛠️ Debug Console
-Visible if "Debug" is enabled in settings. Displays real-time logs for:
-- ⚔️ Damage dealt (and remaining enemy HP)
-- 🆙 Level-up events
-- 🎁 Chest rewards
-- 👹 Boss spawns
+Visible if "Debug" is enabled in settings.
+- **Real-time Logs**: Tracks damage dealt, level-up events, chest rewards, and boss spawns.
+- **Enemy Counter**: Displays the number of currently active enemies in the top-right of the console.
+- **Stacked Health Bars**: If multiple bosses are active, their health bars will stack vertically in the top-right corner.
+- **Simplified Name**: All bosses are identified simply as "BOSS" in the UI for clarity.
+
+### 💀 Cheat Menu (Developer Only)
+Accessible only if "Cheats" are enabled in the global settings. Features a vertical button panel on the **right side**:
+- **Time Manipulation**: Skip directly to Boss 1 (1:29), Boss 2 (2:59), Elite Boss (3:59), Void Splitter (4:59), or **Reset Timer** to 0:00.
+- **Invincibility (God Mode)**: Toggle ignoring all incoming damage (Press again to disable).
+- **Infinite Damage**: Toggle setting Damage Multiplier to 1000x (Press again to reset to 1x).

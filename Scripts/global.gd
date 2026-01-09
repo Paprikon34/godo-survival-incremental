@@ -2,6 +2,7 @@ extends Node
 
 var debug_enabled: bool = false
 var cheats_enabled: bool = false
+var fps_enabled: bool = true
 
 signal log_emitted(text: String)
 

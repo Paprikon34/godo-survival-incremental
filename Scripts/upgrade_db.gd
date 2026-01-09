@@ -5,62 +5,94 @@ static var UPGRADES = [
 		"name": "Heal",
 		"description": "Restore 20 Health",
 		"type": "stat",
-		"id": "heal"
+		"id": "heal",
+		"weight": 10
 	},
 	{
 		"name": "Swiftness",
 		"description": "Move Speed +10%",
 		"type": "stat",
-		"id": "speed"
+		"id": "speed",
+		"weight": 10
 	},
 	{
 		"name": "Power",
 		"description": "Damage +10%",
 		"type": "stat",
-		"id": "damage"
+		"id": "damage",
+		"weight": 10
 	},
 	{
 		"name": "Magic Shotgun",
 		"description": "+1 Projectile",
 		"type": "weapon_upgrade",
-		"id": "multishot"
+		"id": "magic_shotgun",
+		"weight": 8
 	},
 	{
 		"name": "Wand",
 		"description": "Unlock/Upgrade Magic Wand",
 		"type": "weapon_unlock",
-		"id": "wand"
+		"id": "wand",
+		"weight": 5
 	},
 	{
 		"name": "Smart",
 		"description": "XP Gain +10%",
 		"type": "stat",
-		"id": "smart"
+		"id": "smart",
+		"weight": 10
 	},
 	{
 		"name": "Despair",
 		"description": "Enemies +5% HP/Speed, You get +10% XP",
 		"type": "challenge",
-		"id": "challenge"
+		"id": "challenge",
+		"weight": 5
 	},
 	{
 		"name": "Vitality",
 		"description": "Max Health +10%",
 		"type": "stat",
-		"id": "vitality"
+		"id": "vitality",
+		"weight": 10
 	},
 	{
 		"name": "Luck",
 		"description": "Luck +10%",
 		"type": "stat",
-		"id": "luck"
+		"id": "luck",
+		"weight": 10
 	}
 ]
 
 static func get_random_upgrades(count: int) -> Array:
-	var options = UPGRADES.duplicate()
-	options.shuffle()
-	return options.slice(0, count)
+	var pool = UPGRADES.duplicate()
+	var selected = []
+	
+	for i in range(count):
+		if pool.is_empty():
+			break
+			
+		var total_weight = 0.0
+		for item in pool:
+			total_weight += item.get("weight", 1)
+			
+		var roll = randf() * total_weight
+		var current_weight = 0.0
+		var picked_item = null
+		
+		for item in pool:
+			current_weight += item.get("weight", 1)
+			if roll <= current_weight:
+				picked_item = item
+				break
+		
+		if picked_item:
+			selected.append(picked_item)
+			pool.erase(picked_item) # Remove so we don't pick it again for this hand
+			
+	return selected
 
 static func apply_upgrade(player: Node, upgrade_id: String):
 	Global.log("Applying upgrade: " + upgrade_id)
@@ -85,8 +117,8 @@ static func apply_upgrade(player: Node, upgrade_id: String):
 				if game.has_method("update_all_enemies"):
 					game.update_all_enemies()
 				Global.log("Enemies Buffed! HP Multiplier: " + str(game.enemy_health_multiplier))
-		"multishot":
-			var mm = player.get_node_or_null("MagicMissile")
+		"magic_shotgun":
+			var mm = player.get_node_or_null("MagicShotgun")
 			if mm:
 				if "projectile_count" in mm:
 					mm.projectile_count += 1

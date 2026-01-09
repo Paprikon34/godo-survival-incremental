@@ -1,9 +1,11 @@
 extends CharacterBody2D
 
+@export var stats: EnemyData
 @export var speed: float = 100.0
 @export var health: float = 10.0
 @export var damage: float = 10.0
 @export var drops_chest: bool = false
+@export var xp_reward: float = 10.0
 
 var max_health: float = 10.0
 
@@ -11,6 +13,14 @@ var max_health: float = 10.0
 @onready var hp_bar = get_node_or_null("HealthBar")
 
 func _ready():
+	if stats:
+		health = stats.health
+		max_health = stats.health
+		speed = stats.speed
+		xp_reward = stats.xp_reward
+	
+	add_to_group("enemy")
+	
 	# Wait a frame to ensure game.gd has applied multipliers
 	await get_tree().process_frame
 	max_health = health
@@ -36,7 +46,7 @@ func take_damage(amount: float):
 	health -= amount
 	if hp_bar:
 		hp_bar.value = health
-	Global.log("Enemy took " + str(amount) + " damage. Remaining HP: " + str(health))
+	# Global.log("Enemy took " + str(amount) + " damage. Remaining HP: " + str(health))
 	if health <= 0:
 		if drops_chest:
 			call_deferred("_spawn_chest")
@@ -56,13 +66,14 @@ func die():
 		if "luck_multiplier" in player:
 			luck_chance += (player.luck_multiplier - 1.0)
 			
-		if randf() < luck_chance:
-			xp_mult = 2.0
-		if randf() < luck_chance * 0.1: # Rare
+		var roll = randf()
+		if roll < luck_chance * 0.1: # Rare 3x
 			xp_mult = 3.0
+		elif roll < luck_chance: # 2x
+			xp_mult = 2.0
 			
 		if xp_mult > 1.0:
 			Global.log("Lucky! %dx XP from enemy kill." % xp_mult)
 			
-		player.gain_xp(10.0 * xp_mult)
+		player.gain_xp(xp_reward * xp_mult)
 	queue_free()

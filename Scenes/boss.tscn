@@ -8,12 +8,13 @@ size = Vector2(100, 100)
 
 [node name="Boss" type="CharacterBody2D" groups=["enemy"]]
 collision_layer = 2
-collision_mask = 3
+collision_mask = 1
 script = ExtResource("1_script")
 speed = 80.0
 health = 100.0
 damage = 25.0
 drops_chest = true
+xp_reward = 500.0
 
 [node name="HealthBar" type="ProgressBar" parent="."]
 modulate = Color(1, 0, 0, 1)

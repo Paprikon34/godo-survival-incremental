@@ -1,0 +1,27 @@
+[gd_resource type="Resource" load_steps=11 format=3]
+
+[ext_resource type="Script" path="res://Resources/Types/MapData.gd" id="1_script"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_1.tres" id="2_w1"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_boss_1.tres" id="3_wb1"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_2.tres" id="4_w2"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_boss_2.tres" id="5_wb2"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_3.tres" id="6_w3"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_boss_elite.tres" id="7_wbe"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_4.tres" id="8_w4"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_boss_splitting.tres" id="9_wbs"]
+[ext_resource type="Resource" path="res://Resources/Data/Waves/wave_final.tres" id="10_wf"]
+
+[resource]
+script = ExtResource("1_script")
+map_name = "The Void Plains"
+waves = [
+	ExtResource("2_w1"),
+	ExtResource("3_wb1"),
+	ExtResource("4_w2"),
+	ExtResource("5_wb2"),
+	ExtResource("6_w3"),
+	ExtResource("7_wbe"),
+	ExtResource("8_w4"),
+	ExtResource("9_wbs"),
+	ExtResource("10_wf")
+]
