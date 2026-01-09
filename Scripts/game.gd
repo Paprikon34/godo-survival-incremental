@@ -1,9 +1,10 @@
 extends Node2D
 
-@export var enemy_scene: PackedScene
-@export var fast_enemy_scene: PackedScene
-@export var boss_scene: PackedScene
-@export var spawn_interval: float = 0.66
+@export var tank_enemy_scene: PackedScene
+@export var spawn_interval_initial: float = 2.0
+@export var spawn_interval_min: float = 0.4
+@export var spawn_interval_ramp_time: float = 600.0 # 10 minutes to reach min interval
+var spawn_interval: float = 2.0
 
 var enemy_speed_multiplier: float = 1.0
 var enemy_health_multiplier: float = 1.0
@@ -286,8 +287,10 @@ func _process(delta):
 		return
 		
 	elapsed_time += delta
-	spawn_timer += delta
-	
+	# Calculate dynamic spawn interval
+	var progress = min(elapsed_time / spawn_interval_ramp_time, 1.0)
+	spawn_interval = lerp(spawn_interval_initial, spawn_interval_min, progress)
+
 	if spawn_timer >= spawn_interval:
 		spawn_timer = 0.0
 		spawn_enemy()
@@ -362,9 +365,17 @@ func spawn_enemy():
 		return
 		
 	var chosen_scene = enemy_scene
-	# Check if we should spawn fast enemy (after 2 mins = 120s)
-	if elapsed_time > 120.0 and fast_enemy_scene:
-		if randf() < 0.3: # 30% chance for fast enemy
+	
+	# Randomly pick enemy based on time
+	var rand = randf()
+	
+	if elapsed_time > 180.0 and tank_enemy_scene: # 3 minutes
+		if rand < 0.2: # 20% for tank
+			chosen_scene = tank_enemy_scene
+		elif rand < 0.5: # 30% for fast (0.2 to 0.5)
+			chosen_scene = fast_enemy_scene
+	elif elapsed_time > 120.0 and fast_enemy_scene: # 2 minutes
+		if rand < 0.3: # 30% for fast
 			chosen_scene = fast_enemy_scene
 
 	var enemy = chosen_scene.instantiate()

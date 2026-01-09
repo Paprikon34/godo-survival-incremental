@@ -5,12 +5,14 @@
 [ext_resource type="PackedScene" uid="uid://dak3l2m4n5q6" path="res://Scenes/enemy.tscn" id="3_enemy"]
 [ext_resource type="PackedScene" uid="uid://dak3l2m4n5q7" path="res://Scenes/fast_enemy.tscn" id="3_fast_enemy"]
 [ext_resource type="PackedScene" path="res://Scenes/boss.tscn" id="3_boss"]
+[ext_resource type="PackedScene" uid="uid://eak3l2m4n5q8" path="res://Scenes/tank_enemy.tscn" id="3_tank"]
 [ext_resource type="Script" uid="uid://d3ptyr26luidn" path="res://Scripts/grid_background.gd" id="4_bg"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_script")
 enemy_scene = ExtResource("3_enemy")
 fast_enemy_scene = ExtResource("3_fast_enemy")
+tank_enemy_scene = ExtResource("3_tank")
 boss_scene = ExtResource("3_boss")
 
 [node name="Background" type="Node2D" parent="."]
