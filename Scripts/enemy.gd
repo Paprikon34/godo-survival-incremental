@@ -6,6 +6,7 @@ extends CharacterBody2D
 @export var damage: float = 10.0
 @export var drops_chest: bool = false
 @export var xp_reward: float = 10.0
+@export var gold_reward: int = 1
 @export var attack_interval: float = 0.5
 
 var attack_timer: float = 0.0
@@ -54,7 +55,7 @@ func take_damage(amount: float):
 	health -= amount
 	if hp_bar:
 		hp_bar.value = health
-	# Global.log("Enemy took " + str(amount) + " damage. Remaining HP: " + str(health))
+	# Global.console_log("Enemy took " + str(amount) + " damage. Remaining HP: " + str(health))
 	if health <= 0:
 		if drops_chest:
 			call_deferred("_spawn_chest")
@@ -69,6 +70,8 @@ func _spawn_chest():
 func die():
 	# Give XP to player
 	if player and player.has_method("gain_xp"):
+		Global.add_gold(gold_reward)
+		
 		var xp_mult = 1.0
 		var luck_chance = 0.05
 		if "luck_multiplier" in player:
@@ -81,7 +84,7 @@ func die():
 			xp_mult = 2.0
 			
 		if xp_mult > 1.0:
-			Global.log("Lucky! %dx XP from enemy kill." % xp_mult)
+			Global.console_log("Lucky! %dx XP from enemy kill." % xp_mult)
 			
 		player.gain_xp(xp_reward * xp_mult)
 	queue_free()

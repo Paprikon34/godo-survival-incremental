@@ -109,7 +109,7 @@ static func get_random_upgrades(count: int) -> Array:
 	return selected
 
 static func apply_upgrade(player: Node, upgrade_id: String):
-	Global.log("Applying upgrade: " + upgrade_id)
+	Global.console_log("Applying upgrade: " + upgrade_id)
 	match upgrade_id:
 		"heal":
 			player.health = min(player.health + 20, player.max_health)
@@ -130,7 +130,7 @@ static func apply_upgrade(player: Node, upgrade_id: String):
 				game.enemy_health_multiplier += 0.05
 				if game.has_method("update_all_enemies"):
 					game.update_all_enemies()
-				Global.log("Enemies Buffed! HP Multiplier: " + str(game.enemy_health_multiplier))
+				Global.console_log("Enemies Buffed! HP Multiplier: " + str(game.enemy_health_multiplier))
 		"magic_shotgun":
 			var mm = player.get_node_or_null("MagicShotgun")
 			if mm:

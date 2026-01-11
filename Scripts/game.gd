@@ -41,6 +41,7 @@ var active_bosses = []
 
 # New UI References
 @onready var time_label = $CanvasLayer/UI/TimeLabel
+var gold_label: Label
 @onready var fps_label = $CanvasLayer/UI/FPSLabel
 @onready var xp_bar = $CanvasLayer/UI/XPBar
 @onready var pause_menu = $CanvasLayer/UI/PauseMenu
@@ -79,6 +80,13 @@ func _ready():
 	if player:
 		player.level_up.connect(_on_level_up)
 		player.process_mode = Node.PROCESS_MODE_PAUSABLE
+	
+	# Create Gold Label dynamically
+	gold_label = Label.new()
+	gold_label.position = Vector2(80, 20) # Near timer
+	gold_label.add_theme_font_size_override("font_size", 24)
+	gold_label.add_theme_color_override("font_color", Color.GOLD)
+	$CanvasLayer/UI.add_child(gold_label)
 		
 	if fps_label:
 		fps_label.visible = Global.fps_enabled
@@ -91,7 +99,7 @@ func _ready():
 	# Debug Console Init
 	debug_console.visible = Global.debug_enabled
 	if Global.debug_enabled:
-		Global.log_emitted.connect(_on_log_emitted)
+		Global.console_log_emitted.connect(_on_log_emitted)
 		
 	# Cheat Menu Init
 	cheat_menu.visible = Global.cheats_enabled
@@ -109,7 +117,7 @@ func _ready():
 		dmg_button.pressed.connect(_on_super_damage_toggle)
 		$CanvasLayer/UI/CheatMenu/ResetTimer.pressed.connect(_on_reset_timer)
 		$CanvasLayer/UI/CheatMenu/ForceSpawn.pressed.connect(_on_force_spawn)
-		Global.log("CHEATS ENABLED!")
+		Global.console_log("CHEATS ENABLED!")
 		
 	level_up_menu.process_mode = Node.PROCESS_MODE_ALWAYS
 	pause_menu.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -135,13 +143,13 @@ func _show_level_up_menu():
 			enemy.health += 0.5
 		if "max_health" in enemy:
 			enemy.max_health += 0.5
-	Global.log("Level Up! Enemies gain +0.5 Max HP (Total bonus: +" + str(level_up_hp_bonus) + ")")
+	Global.console_log("Level Up! Enemies gain +0.5 Max HP (Total bonus: +" + str(level_up_hp_bonus) + ")")
 	
 	var num_choices = 3
 	var luck_chance = 0.05 + (player.luck_multiplier - 1.0)
 	if player and randf() < luck_chance:
 		num_choices = 4
-		Global.log("Lucky! Extra upgrade choice.")
+		Global.console_log("Lucky! Extra upgrade choice.")
 		
 	var options = UpgradeDB.get_random_upgrades(num_choices)
 	current_upgrades = options
@@ -177,7 +185,7 @@ func _on_upgrade_selected(index: int):
 		update_upgrade_list_ui()
 		update_detailed_upgrade_list()
 		
-		Global.log("Upgrade selected: " + id)
+		Global.console_log("Upgrade selected: " + id)
 		
 	level_ups_pending -= 1
 	
@@ -245,7 +253,7 @@ func update_detailed_upgrade_list():
 		detailed_upgrade_list.add_child(l)
 
 func on_chest_collected():
-	Global.log("Chest collected!")
+	Global.console_log("Chest collected!")
 	# Get list of existing upgrades (excluding heal)
 	var available_upgrades = []
 	for id in upgrade_counts:
@@ -263,9 +271,31 @@ func on_chest_collected():
 			num_rewards = 2
 			
 		if num_rewards > 1:
-			Global.log("Lucky! Chest contains %d rewards." % num_rewards)
+			Global.console_log("Lucky! Chest contains %d rewards." % num_rewards)
 			
-		var reward_text = "Reward:\n"
+		# Gold Reward Logic
+		var base_gold_options = [100, 150, 200, 250, 500]
+		# Luck influences chance for better gold
+		var gold_roll = randf()
+		var gold_idx = 0
+		
+		# Simple weighted logic influenced by luck
+		var luck_factor = player.luck_multiplier
+		if gold_roll < 0.05 * luck_factor: gold_idx = 4 # 500
+		elif gold_roll < 0.15 * luck_factor: gold_idx = 3 # 250
+		elif gold_roll < 0.3 * luck_factor: gold_idx = 2 # 200
+		elif gold_roll < 0.5 * luck_factor: gold_idx = 1 # 150
+		else: gold_idx = 0 # 100
+		
+		var gold_amount = base_gold_options[gold_idx]
+		
+		# Multiplier applies to gold too
+		if num_rewards == 3: gold_amount *= 3
+		elif num_rewards == 2: gold_amount *= 2
+		
+		Global.add_gold(gold_amount)
+			
+		var reward_text = "Reward:\nGold: +%d\n" % gold_amount
 		for i in range(num_rewards):
 			var random_id = available_upgrades.pick_random()
 			UpgradeDB.apply_upgrade(player, random_id)
@@ -282,7 +312,7 @@ func on_chest_collected():
 		chest_popup.visible = true
 	else:
 		# Fallback if maxed or no upgrades? (Rare logic, but safe to just print)
-		Global.log("No valid upgrades for chest.")
+		Global.console_log("No valid upgrades for chest.")
 
 func _on_chest_ok_pressed():
 	chest_popup.visible = false
@@ -371,7 +401,7 @@ func _process(delta):
 	
 	if active_wave_data != best_wave:
 		active_wave_data = best_wave
-		Global.log("WAVE CHANGED. Time: " + str(active_wave_data.time))
+		Global.console_log("WAVE CHANGED. Time: " + str(active_wave_data.time))
 		
 		# Boss Check (One-shot)
 		if active_wave_data.get("type") == "boss":
@@ -395,6 +425,9 @@ func _process(delta):
 	var minutes = int(elapsed_time / 60)
 	var seconds = int(elapsed_time) % 60
 	time_label.text = "%02d:%02d" % [minutes, seconds]
+	
+	if gold_label:
+		gold_label.text = "Gold: %d" % Global.save_data.gold
 	
 	if player:
 		# XP Bar is 0 to 100% of current level requirement
@@ -464,11 +497,11 @@ func add_active_boss(boss: Node2D):
 		active_bosses.append(boss)
 		if not boss.is_connected("tree_exited", _on_boss_tree_exited):
 			boss.tree_exited.connect(_on_boss_tree_exited.bind(boss))
-		Global.log("BOSS REGISTERED!")
+		Global.console_log("BOSS REGISTERED!")
 
 func _on_boss_tree_exited(boss):
 	active_bosses.erase(boss)
-	Global.log("BOSS DEFEATED/REMOVED")
+	Global.console_log("BOSS DEFEATED/REMOVED")
 
 func update_all_enemies():
 	var enemies = get_tree().get_nodes_in_group("enemy")
@@ -480,7 +513,7 @@ func update_all_enemies():
 			enemy.health *= 1.05
 		if "max_health" in enemy:
 			enemy.max_health *= 1.05
-	Global.log("Instant Buff: All current enemies speed/HP increased by 5%!")
+	Global.console_log("Instant Buff: All current enemies speed/HP increased by 5%!")
 
 func spawn_enemy_by_type(type: String):
 	var scene: PackedScene = null
@@ -533,7 +566,7 @@ func spawn_enemy_by_type(type: String):
 			stats_path = "res://Resources/Data/Enemies/splitting_enemy.tres"
 
 	if not scene: 
-		Global.log("Error: Scene not found for type " + type)
+		Global.console_log("Error: Scene not found for type " + type)
 		return
 		
 	var enemy = scene.instantiate()
@@ -562,12 +595,12 @@ func spawn_enemy_by_type(type: String):
 	
 	if is_boss:
 		add_active_boss(enemy)
-		Global.log("BOSS SPAWNED: " + enemy_name)
+		Global.console_log("BOSS SPAWNED: " + enemy_name)
 	else:
-		Global.log("Spawned " + enemy_name)
+		Global.console_log("Spawned " + enemy_name)
 
 func spawn_from_wave(wave: Resource):
-	Global.log("Error: spawn_from_wave called (DEPRECATED)")
+	Global.console_log("Error: spawn_from_wave called (DEPRECATED)")
 
 func _on_log_emitted(text: String):
 	if debug_log_label:
@@ -577,44 +610,44 @@ func _on_log_emitted(text: String):
 
 func _on_skip_time_1():
 	elapsed_time = 89.0
-	Global.log("Cheat: Skipped to 1:29")
+	Global.console_log("Cheat: Skipped to 1:29")
 
 func _on_skip_time_2():
 	elapsed_time = 179.0
-	Global.log("Cheat: Skipped to 2:59")
+	Global.console_log("Cheat: Skipped to 2:59")
 
 func _on_skip_time_3():
 	elapsed_time = 239.0
-	Global.log("Cheat: Skipped to 3:59")
+	Global.console_log("Cheat: Skipped to 3:59")
 
 func _on_skip_time_4():
 	elapsed_time = 299.0
-	Global.log("Cheat: Skipped to 4:59")
+	Global.console_log("Cheat: Skipped to 4:59")
 
 func _on_skip_time_5():
 	elapsed_time = 359.0
-	Global.log("Cheat: Skipped to 5:59")
+	Global.console_log("Cheat: Skipped to 5:59")
 
 func _on_skip_time_6():
 	elapsed_time = 419.0
-	Global.log("Cheat: Skipped to 6:59")
+	Global.console_log("Cheat: Skipped to 6:59")
 
 func _on_skip_time_7():
 	elapsed_time = 479.0
-	Global.log("Cheat: Skipped to 7:59")
+	Global.console_log("Cheat: Skipped to 7:59")
 
 func _on_skip_time_8():
 	elapsed_time = 539.0
-	Global.log("Cheat: Skipped to 8:59")
+	Global.console_log("Cheat: Skipped to 8:59")
 
 func _on_skip_time_9():
 	elapsed_time = 599.0
-	Global.log("Cheat: Skipped to 9:59")
+	Global.console_log("Cheat: Skipped to 9:59")
 
 func _on_god_mode_toggle():
 	player.is_god_mode = not player.is_god_mode
 	god_button.text = "God Mode: " + ("ON" if player.is_god_mode else "OFF")
-	Global.log("Cheat: God Mode " + god_button.text)
+	Global.console_log("Cheat: God Mode " + god_button.text)
 
 func _on_super_damage_toggle():
 	if player.damage_multiplier < 900.0:
@@ -623,18 +656,18 @@ func _on_super_damage_toggle():
 	else:
 		player.damage_multiplier = 1.0
 		dmg_button.text = "Super Damage: OFF"
-	Global.log("Cheat: " + dmg_button.text)
+	Global.console_log("Cheat: " + dmg_button.text)
 
 func _on_reset_timer():
 	elapsed_time = 0.0
 	spawn_timer = 0.0
 	active_wave_data = null
-	Global.log("Cheat: Timer Reset")
+	Global.console_log("Cheat: Timer Reset")
 
 func _on_force_spawn():
 	if active_wave_data:
-		Global.log("Manual Spawn Triggered")
+		Global.console_log("Manual Spawn Triggered")
 		var type = active_wave_data.enemies.pick_random()
 		spawn_enemy_by_type(type)
 	else:
-		Global.log("Manual Spawn Failed: No active wave data!")
+		Global.console_log("Manual Spawn Failed: No active wave data!")

@@ -19,6 +19,22 @@ var regen_timer: float = 0.0
 @onready var hp_bar = get_node_or_null("HealthBar")
 
 func _ready():
+	# Apply Permanent Upgrades
+	var upgrades = Global.save_data.upgrades
+	
+	# Health: +10 per level (Max 5)
+	var hp_bonus = upgrades.health * 10
+	max_health += hp_bonus
+	health = max_health # Restore full HP
+	
+	# Speed: +20 per level (Max 3)
+	var speed_bonus = upgrades.speed * 20
+	speed += speed_bonus
+	
+	# Damage: +5% per level (Max 5)
+	var dmg_bonus = upgrades.damage * 0.05
+	damage_multiplier += dmg_bonus
+	
 	if hp_bar:
 		hp_bar.max_value = max_health
 		hp_bar.value = health
@@ -65,9 +81,9 @@ func _trigger_level_up():
 	experience -= level * 100
 	level += 1
 	emit_signal("level_up")
-	Global.log("Level Up! New Level: " + str(level))
+	Global.console_log("Level Up! New Level: " + str(level))
 
 func die():
-	Global.log("Player Died!")
+	Global.console_log("Player Died!")
 	# Reload scene or show game over
 	get_tree().call_deferred("reload_current_scene")

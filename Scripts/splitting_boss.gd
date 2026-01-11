@@ -14,7 +14,7 @@ func take_damage(amount: float):
 
 func split():
 	has_split = true
-	Global.log("BOSS SPLITTING!")
+	Global.console_log("BOSS SPLITTING!")
 	
 	if mini_boss_scene:
 		for i in range(split_count):
