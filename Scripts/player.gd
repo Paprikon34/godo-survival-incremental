@@ -12,6 +12,7 @@ signal level_up
 @export var luck_multiplier: float = 1.0
 @export var piercing_count: int = 0
 @export var regeneration: float = 0.5 # HP per second
+@export var defense: float = 0.0
 
 var regen_timer: float = 0.0
 
@@ -46,7 +47,8 @@ func update_hp_bar():
 
 func take_damage(amount: float):
 	if is_god_mode: return
-	health -= amount
+	var damage_taken = max(0.0, amount - defense)
+	health -= damage_taken
 	update_hp_bar()
 	# print("Player took damage: ", amount, " Current health: ", health) # Commented out spam
 	if health <= 0:

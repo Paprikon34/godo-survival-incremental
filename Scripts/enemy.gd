@@ -6,6 +6,9 @@ extends CharacterBody2D
 @export var damage: float = 10.0
 @export var drops_chest: bool = false
 @export var xp_reward: float = 10.0
+@export var attack_interval: float = 0.5
+
+var attack_timer: float = 0.0
 
 var max_health: float = 10.0
 
@@ -35,12 +38,17 @@ func _physics_process(delta):
 		move_and_slide()
 		
 		# Simple collision damage (if using CharacterBody2D collision)
-		# Usually better to use Area2D for hitboxes, but this is a start
+		# Periodic collision damage
+		if attack_timer > 0:
+			attack_timer -= delta
+		
 		for i in get_slide_collision_count():
 			var collision = get_slide_collision(i)
 			var collider = collision.get_collider()
-			if collider.has_method("take_damage") and collider.name == "Player": # Name check is a bit brittle, ideally use groups or class_name
-				collider.take_damage(damage * delta) # Continuous damage
+			if collider.has_method("take_damage") and collider.name == "Player":
+				if attack_timer <= 0:
+					collider.take_damage(damage) # Flat damage, not delta scaled
+					attack_timer = attack_interval
 
 func take_damage(amount: float):
 	health -= amount

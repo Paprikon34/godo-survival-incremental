@@ -13,6 +13,7 @@ Welcome to the official wiki! Here you can find all the details about weapons, u
 | **Base Damage** | 100% |
 | **Base XP Gain** | 100% |
 | **Luck** | 100% |
+| **Defense** | 0 |
 
 ---
 
@@ -43,6 +44,7 @@ Fires purple projectiles directly towards your mouse cursor.
 | **Luck** | Increases Luck by **+10%**. |
 | **Piercing** | Projectiles pierce **+1 Enemy**. |
 | **Despair** | Enemies get **+5% Speed/HP**, but you get **+10% XP**. |
+| **Defense** | Increases Defense by **+2.5**. |
 
 ---
 
@@ -53,21 +55,21 @@ All enemies scale with your level: **+0.5 HP per player level up**.
 The standard grunt.
 - **Health**: 10 (+0.5/lvl)
 - **Speed**: 100
-- **Damage**: 10 per collision
+- **Damage**: 10 (0.5s rate)
 - **XP Bounty**: 10
 
 ### 🟡 Fast Enemy
 Spawns after 2 minutes (30% chance).
 - **Health**: 5 (+0.5/lvl)
 - **Speed**: 300
-- **Damage**: 5 per collision
+- **Damage**: 5 (0.5s rate)
 - **XP Bounty**: 10
 
 ### 🏰 Tank Enemy
 Spawns after 3 minutes (20% chance).
 - **Health**: 30 (+0.5/lvl)
 - **Speed**: 60
-- **Damage**: 15 per collision
+- **Damage**: 15 (0.5s rate)
 - **XP Bounty**: 25
 
 ### 🟪 Splitting Enemy
