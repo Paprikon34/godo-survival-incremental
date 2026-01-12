@@ -102,7 +102,7 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
-size = Vector2(11, 12.333334)
+size = Vector2(14, 12.333334)
 
 [node name="Enemy" type="CharacterBody2D" groups=["enemy"]]
 collision_layer = 2
@@ -118,6 +118,6 @@ sprite_frames = SubResource("SpriteFrames_lx8xm")
 animation = &"move"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-0.5, -2.5)
+position = Vector2(-1, -2.5)
 scale = Vector2(3, 3)
 shape = SubResource("RectangleShape2D_1")

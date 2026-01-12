@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://lrv5luagyn4k"
-path="res://.godot/imported/fast_enemy.jpg-51f78f14c635e98e04dec2cad1a71b8b.ctex"
+uid="uid://degbfwmp5lsrt"
+path="res://.godot/imported/fast_enemy-removebg-preview.png-8dfeebe7d617bb0c6bb7854bb8aad94c.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/fast_enemy.jpg"
-dest_files=["res://.godot/imported/fast_enemy.jpg-51f78f14c635e98e04dec2cad1a71b8b.ctex"]
+source_file="res://Sprites/fast_enemy-removebg-preview.png"
+dest_files=["res://.godot/imported/fast_enemy-removebg-preview.png-8dfeebe7d617bb0c6bb7854bb8aad94c.ctex"]
 
 [params]
 
