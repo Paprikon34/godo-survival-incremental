@@ -94,10 +94,10 @@ Dropped by Bosses. Grants a **free level** to one of your currently owned upgrad
 1. **Level-Up**: Every time the player levels up, every enemy (current and future) gains **+0.5 HP**.
 2. **Despair**: Every level of Despair adds **+5% HP and Speed** to all enemies instantly.
 3. **🕒 Spawn Rate**: The spawn interval decreases linearly over time, reaching maximum difficulty at **10 minutes**.
-    - **Initial Rate**: 1 enemy every 2.0s
-    - **Final Rate (10m)**: 1 enemy every 0.4s
-    - **Ramp Time**: 600 seconds (10 minutes)
-    - **Spawn Distance**: ~730px from player (off-screen radius).
+	- **Initial Rate**: 1 enemy every 2.0s
+	- **Final Rate (10m)**: 1 enemy every 0.4s
+	- **Ramp Time**: 600 seconds (10 minutes)
+	- **Spawn Distance**: ~730px from player (off-screen radius).
 
 ### 🍀 Luck Mechanics
 Luck multiplier (default 100%) increases the probability of "Lucky" events. There is a **5% base chance** for these events even at 100% Luck.
@@ -119,7 +119,7 @@ Spawning is handled via `WaveData` resources linked in the `MapData`.
 - **Wave 3 (3:00)**: **Boss II** appears.
 - **Wave 4 (4:00)**: **Elite Boss** (High HP, High Speed) appears.
 - **Wave 5 (5:00)**: **Void Splitter** (Special Boss) appears.
-    - **Ability**: Cellular Division. Splits into 4 Fragments at 50% HP.
+	- **Ability**: Cellular Division. Splits into 4 Fragments at 50% HP.
 - **Post-5m**: **Elite Enemies** begin spawning frequently.
 
 

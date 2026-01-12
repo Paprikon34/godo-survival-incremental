@@ -1,8 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://b8j2k1m3n4p5"]
+[gd_scene load_steps=5 format=3 uid="uid://b8j2k1m3n4p5"]
 
-[ext_resource type="Script" path="res://Scripts/player.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://icon.svg" id="2_icon"]
-[ext_resource type="Script" path="res://Scripts/magic_shotgun.gd" id="3_weapon"]
+[ext_resource type="Script" uid="uid://dywny1s0ahe6b" path="res://Scripts/player.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cxux6am58q0an" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Script" uid="uid://cdwwxnypuu4m7" path="res://Scripts/magic_shotgun.gd" id="3_weapon"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(120, 120)
