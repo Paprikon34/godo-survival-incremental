@@ -599,6 +599,7 @@ func spawn_enemy_by_type(type: String):
 	else:
 		Global.console_log("Spawned " + enemy_name)
 
+@warning_ignore("unused_parameter")
 func spawn_from_wave(wave: Resource):
 	Global.console_log("Error: spawn_from_wave called (DEPRECATED)")
 

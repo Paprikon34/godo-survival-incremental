@@ -1,14 +1,14 @@
 extends Area2D
 
-@onready var sprite = $Sprite2D
-@onready var anim_player = $AnimationPlayer
+@onready var sprite = $AnimatedSprite2D
 
 var collected = false
 
 func _ready():
 	connect("body_entered", _on_body_entered)
-	if anim_player:
-		anim_player.play("idle")
+	if sprite:
+		sprite.process_mode = Node.PROCESS_MODE_ALWAYS
+		sprite.play("idle")
 
 func _on_body_entered(body):
 	if collected: return
@@ -19,8 +19,10 @@ func _on_body_entered(body):
 		if game.has_method("on_chest_collected"):
 			game.on_chest_collected()
 		
-		if anim_player:
-			anim_player.play("open")
-			await anim_player.animation_finished
+		if sprite:
+			Global.console_log("DEBUG: Chest Open Animation Starting")
+			sprite.play("open")
+			await sprite.animation_finished
+			Global.console_log("DEBUG: Chest Open Animation Finished")
 		
 		queue_free()
