@@ -54,5 +54,5 @@ func save_game():
 
 func add_gold(amount: int):
 	save_data.gold += amount
-	console_log("Gained %d Gold! Total: %d" % [amount, save_data.gold])
+	# console_log("Gained %d Gold! Total: %d" % [amount, save_data.gold])
 	save_game()
