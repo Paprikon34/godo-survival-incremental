@@ -1,7 +1,7 @@
 [gd_scene load_steps=7 format=3 uid="uid://chest1m2n3p4q"]
 
-[ext_resource type="Script" path="res://Scripts/chest.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://Animated Chests/Animated Chests/Chests.png" id="2_texture"]
+[ext_resource type="Script" uid="uid://cc0s3krmhu8fc" path="res://Scripts/chest.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://dln88w08ov1ur" path="res://Animated Chests/Animated Chests/Chests.png" id="2_texture"]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(48, 64)
@@ -40,14 +40,15 @@ tracks/0/keys = {
 
 [sub_resource type="AnimationLibrary" id="AnimationLibrary_chest"]
 _data = {
-"idle": SubResource("Animation_idle"),
-"open": SubResource("Animation_open")
+&"idle": SubResource("Animation_idle"),
+&"open": SubResource("Animation_open")
 }
 
 [node name="Chest" type="Area2D"]
 script = ExtResource("1_script")
 
 [node name="Sprite2D" type="Sprite2D" parent="."]
+position = Vector2(0, 2.3841858e-07)
 texture = ExtResource("2_texture")
 hframes = 5
 vframes = 4
@@ -57,5 +58,5 @@ shape = SubResource("RectangleShape2D_1")
 
 [node name="AnimationPlayer" type="AnimationPlayer" parent="."]
 libraries = {
-"": SubResource("AnimationLibrary_chest")
+&"": SubResource("AnimationLibrary_chest")
 }
