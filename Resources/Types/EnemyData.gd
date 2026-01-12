@@ -7,3 +7,4 @@ class_name EnemyData
 @export var speed: float = 100.0
 @export var xp_reward: float = 10.0
 @export var is_boss: bool = false
+@export var hp_scaling: float = 1.0

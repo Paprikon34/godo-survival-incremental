@@ -51,38 +51,47 @@ Fires purple projectiles directly towards your mouse cursor.
 ## 👹 Enemies
 All enemies scale with your level: **+0.5 HP per player level up**.
 
-### 🔴 Basic Enemy
+### 🔴 Slime
 The standard grunt.
 - **Health**: 10 (+0.5/lvl)
 - **Speed**: 100
 - **Damage**: 10 (0.5s rate)
 - **XP Bounty**: 10
 
-### 🟡 Fast Enemy
-Spawns after 2 minutes (30% chance).
+### 🟡 Skull
+Spawns after 2 minutes (100% chance in later waves).
 - **Health**: 5 (+0.5/lvl)
 - **Speed**: 300
 - **Damage**: 5 (0.5s rate)
 - **XP Bounty**: 10
 
 ### 🏰 Tank Enemy
-Spawns after 3 minutes (20% chance).
-- **Health**: 30 (+0.5/lvl)
+Spawns after 3 minutes.
+- **Health**: 30 (+2/lvl)
 - **Speed**: 60
 - **Damage**: 15 (0.5s rate)
 - **XP Bounty**: 25
+
+### 👹 Elite Slime (Red Tint)
+Spawns after 5 minutes. Tougher versions of the standard slime.
+- **Health**: 45 (+0.5/lvl)
+- **Speed**: 120
+- **Damage**: 10 (0.5s rate)
+- **XP Bounty**: 50
 
 ### 🟪 Splitting Enemy
 Spawns after 5 minutes.
 - **Health**: 50 (+0.5/lvl)
 - **Speed**: 90
-- **Ability**: Splits into 2 **Basic Enemies** upon death.
+- **Ability**: Splits into 2 **Slimes** upon death.
 - **XP Bounty**: 50
 
 ### 💀 Bosses
 Large red enemies that drop **Golden Chests**.
-- **Boss 1 (1:30)**: 100 HP, 80 Speed, **500 XP Bounty**.
-- **Boss 2 (3:00)**: 300 HP, 80 Speed, **500 XP Bounty**.
+- **Boss 1 (1:30)**: 300 HP, 80 Speed, **500 XP Bounty**.
+- **Boss 2 (3:00)**: 600 HP, 90 Speed, **1000 XP Bounty**.
+- **Elite Boss (4:00)**: 1000 HP, 100 Speed, **2000 XP Bounty**.
+- **Void Splitter (5:00)**: 1500 HP, 70 Speed, **3000 XP Bounty**.
 
 ---
 
@@ -98,6 +107,7 @@ Dropped by Bosses. Grants a **free level** to one of your currently owned upgrad
 	- **Final Rate (10m)**: 1 enemy every 0.4s
 	- **Ramp Time**: 600 seconds (10 minutes)
 	- **Spawn Distance**: ~730px from player (off-screen radius).
+4. **Minimum Density**: The game ensures there are always at least **5 enemies** on screen starting from the beginning of the match.
 
 ### 🍀 Luck Mechanics
 Luck multiplier (default 100%) increases the probability of "Lucky" events. There is a **5% base chance** for these events even at 100% Luck.
@@ -117,10 +127,10 @@ Spawning is handled via `WaveData` resources linked in the `MapData`.
 - **Wave 1 (0:00)**: Basic + Fast enemies.
 - **Wave 2 (1:30)**: **Boss I** appears.
 - **Wave 3 (3:00)**: **Boss II** appears.
-- **Wave 4 (4:00)**: **Elite Boss** (High HP, High Speed) appears.
-- **Wave 5 (5:00)**: **Void Splitter** (Special Boss) appears.
+- **Wave 4 (4:00)**: **Elite Boss** (1000 HP, high speed) appears.
+- **Wave 5 (5:00)**: **Void Splitter** (1500 HP Boss) appears.
 	- **Ability**: Cellular Division. Splits into 4 Fragments at 50% HP.
-- **Post-5m**: **Elite Enemies** begin spawning frequently.
+- **Post-5m**: **Elite Slimes** (Red) begin spawning frequently alongside standard Slimes.
 
 
 ### 🛠️ Debug Console

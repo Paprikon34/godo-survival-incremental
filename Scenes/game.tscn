@@ -146,47 +146,47 @@ alignment = 1
 [node name="SkipTime1" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 1:29"
+text = "Skip  to Boss 1"
 
 [node name="SkipTime2" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 2:59"
+text = "Skip to Boss 2"
 
 [node name="SkipTime3" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 3:59"
+text = "Skip to  Boss 3"
 
 [node name="SkipTime4" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 4:59"
+text = "Skip  to Boss 4"
 
 [node name="SkipTime5" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 5:59"
+text = "Skip to Boss 5"
 
 [node name="SkipTime6" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 6:59"
+text = "Skip to Boss 6"
 
 [node name="SkipTime7" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 7:59"
+text = "Skip to Boss 7"
 
 [node name="SkipTime8" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 8:59"
+text = "Skip to Boss 8"
 
 [node name="SkipTime9" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
 theme_override_font_sizes/font_size = 12
-text = "Skip to 9:59"
+text = "Skip to Boss 9"
 
 [node name="ResetTimer" type="Button" parent="CanvasLayer/UI/CheatMenu"]
 layout_mode = 2
@@ -209,6 +209,7 @@ theme_override_font_sizes/font_size = 12
 text = "Force Spawn Enemy"
 
 [node name="DetailedUpgradeList" type="VBoxContainer" parent="CanvasLayer/UI"]
+visible = false
 layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0
@@ -223,6 +224,7 @@ grow_vertical = 0
 alignment = 2
 
 [node name="UpgradeList" type="VBoxContainer" parent="CanvasLayer/UI"]
+visible = false
 layout_mode = 0
 anchor_left = 1.0
 anchor_top = 1.0

@@ -11,3 +11,4 @@ health = 30.0
 speed = 60.0
 xp_reward = 25.0
 is_boss = false
+hp_scaling = 4.0

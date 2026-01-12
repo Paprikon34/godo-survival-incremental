@@ -74,7 +74,7 @@ func gain_xp(amount: float):
 	experience += amount * xp_multiplier
 	# print("Gained XP: ", amount)
 	# Simple leveling logic for now
-	while experience >= level * 100:
+	while experience >= level * 80:
 		_trigger_level_up()
 
 func _trigger_level_up():

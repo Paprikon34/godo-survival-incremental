@@ -83,7 +83,7 @@ func _ready():
 	
 	# Create Gold Label dynamically
 	gold_label = Label.new()
-	gold_label.position = Vector2(80, 20) # Near timer
+	gold_label.position = Vector2(100, 35) # Near timer
 	gold_label.add_theme_font_size_override("font_size", 24)
 	gold_label.add_theme_color_override("font_color", Color.GOLD)
 	$CanvasLayer/UI.add_child(gold_label)
@@ -139,11 +139,16 @@ func _show_level_up_menu():
 	level_up_hp_bonus += 0.5
 	var enemies = get_tree().get_nodes_in_group("enemy")
 	for enemy in enemies:
+		var scaling = 1.0
+		if "stats" in enemy and enemy.stats:
+			scaling = enemy.stats.hp_scaling
+		
+		var bonus = 0.5 * scaling
 		if "health" in enemy:
-			enemy.health += 0.5
+			enemy.health += bonus
 		if "max_health" in enemy:
-			enemy.max_health += 0.5
-	Global.console_log("Level Up! Enemies gain +0.5 Max HP (Total bonus: +" + str(level_up_hp_bonus) + ")")
+			enemy.max_health += bonus
+	Global.console_log("Level Up! Enemies gain base +0.5 HP (scaled by type). Total base bonus: +" + str(level_up_hp_bonus))
 	
 	var num_choices = 3
 	var luck_chance = 0.05 + (player.luck_multiplier - 1.0)
@@ -418,6 +423,18 @@ func _process(delta):
 			var type = active_wave_data.enemies.pick_random()
 			spawn_enemy_by_type(type)
 	
+	# 2.5 Minimum Density Check (Enforcement)
+	var min_enemies = 5 # Active from the start (0-1 min)
+	
+	# Only enforce if we have an active wave to pick enemies from
+	if active_wave_data and active_wave_data.has("enemies"):
+		var current_enemies = get_tree().get_nodes_in_group("enemy").size()
+		if current_enemies < min_enemies:
+			var to_spawn = min_enemies - current_enemies
+			for i in range(to_spawn):
+				var type = active_wave_data.enemies.pick_random()
+				spawn_enemy_by_type(type)
+	
 	# 3. UI Update Safety
 	if not time_label:
 		return
@@ -431,8 +448,8 @@ func _process(delta):
 	
 	if player:
 		# XP Bar is 0 to 100% of current level requirement
-		# Since level up threshold is level * 100
-		var required_xp = player.level * 100
+		# Since level up threshold is level * 80
+		var required_xp = player.level * 80
 		xp_bar.max_value = required_xp
 		xp_bar.value = player.experience
 		
@@ -583,7 +600,12 @@ func spawn_enemy_by_type(type: String):
 			enemy.set("stats", s)
 	
 	# Apply multipliers via properties (applied in enemy's _ready)
-	enemy.extra_hp = level_up_hp_bonus
+	var scaling = 1.0
+	var stats = enemy.get("stats")
+	if stats:
+		scaling = stats.hp_scaling
+		
+	enemy.extra_hp = level_up_hp_bonus * scaling
 	enemy.hp_mult = enemy_health_multiplier
 	enemy.speed_mult = enemy_speed_multiplier
 	
