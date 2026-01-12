@@ -20,7 +20,7 @@ var WAVE_DATA = [
 	{ "time": 240, "type": "boss", "enemies": ["elite_boss"] }, # Boss 4m
 	{ "time": 245, "interval": 1.0, "enemies": ["basic", "fast", "tank"] },
 	{ "time": 300, "type": "boss", "enemies": ["splitting_boss"] }, # Boss 5m
-	{ "time": 305, "interval": 0.8, "enemies": ["elite", "tank", "fast", "splitting_enemy"] } # Elite + Splitting at 5m+
+	{ "time": 305, "interval": 0.8, "enemies": ["basic", "elite", "tank", "fast", "splitting_enemy"] } # Mix in lower HP enemies
 ]
 
 var spawn_timer: float = 0.0
@@ -572,18 +572,20 @@ func spawn_enemy_by_type(type: String):
 	var enemy = scene.instantiate()
 	enemy.process_mode = Node.PROCESS_MODE_PAUSABLE
 	
+	# Visually distinguish Elite enemies
+	if type == "elite":
+		enemy.modulate = Color(1.0, 0.4, 0.4) # Reddish tint
+	
 	# Load and assign stats if available
 	if stats_path != "" and FileAccess.file_exists(stats_path):
 		var s = load(stats_path)
 		if s:
 			enemy.set("stats", s)
 	
-	# Apply multipliers
-	if "speed" in enemy:
-		enemy.speed *= enemy_speed_multiplier
-	if "health" in enemy:
-		enemy.health += level_up_hp_bonus
-		enemy.health *= enemy_health_multiplier
+	# Apply multipliers via properties (applied in enemy's _ready)
+	enemy.extra_hp = level_up_hp_bonus
+	enemy.hp_mult = enemy_health_multiplier
+	enemy.speed_mult = enemy_speed_multiplier
 	
 	# Spawn location (Just outside the screen boundary)
 	var angle = randf() * PI * 2

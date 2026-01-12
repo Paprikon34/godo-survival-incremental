@@ -9,12 +9,18 @@ extends CharacterBody2D
 @export var gold_reward: int = 1
 @export var attack_interval: float = 0.5
 
-var attack_timer: float = 0.0
+var extra_hp: float = 0.0
+var hp_mult: float = 1.0
+var speed_mult: float = 1.0
 
+var attack_timer: float = 0.0
 var max_health: float = 10.0
+var is_dead = false
 
 @onready var player = get_tree().get_first_node_in_group("player")
 @onready var hp_bar = get_node_or_null("HealthBar")
+@onready var sprite = $AnimatedSprite2D
+@onready var collision_shape = $CollisionShape2D
 
 func _ready():
 	if stats:
@@ -23,19 +29,37 @@ func _ready():
 		speed = stats.speed
 		xp_reward = stats.xp_reward
 	
+	# Apply Game-wide scaling
+	health += extra_hp
+	health *= hp_mult
+	max_health = health
+	speed *= speed_mult
+	
 	add_to_group("enemy")
 	
-	# Wait a frame to ensure game.gd has applied multipliers
-	await get_tree().process_frame
-	max_health = health
+	if sprite:
+		if sprite.sprite_frames.has_animation("move"):
+			sprite.play("move")
+		elif sprite.sprite_frames.has_animation("movment"):
+			sprite.play("movment")
+	
 	if hp_bar:
 		hp_bar.max_value = max_health
 		hp_bar.value = health
 
 func _physics_process(delta):
+	if is_dead: return
+	
 	if player:
 		var direction = (player.global_position - global_position).normalized()
 		velocity = direction * speed
+		
+		if sprite:
+			if direction.x < 0:
+				sprite.flip_h = true
+			elif direction.x > 0:
+				sprite.flip_h = false
+				
 		move_and_slide()
 		
 		# Simple collision damage (if using CharacterBody2D collision)
@@ -52,6 +76,8 @@ func _physics_process(delta):
 					attack_timer = attack_interval
 
 func take_damage(amount: float):
+	if is_dead: return
+	
 	health -= amount
 	if hp_bar:
 		hp_bar.value = health
@@ -68,6 +94,17 @@ func _spawn_chest():
 	get_parent().add_child(chest)
 
 func die():
+	if is_dead: return
+	is_dead = true
+	
+	remove_from_group("enemy")
+	
+	# Disable collisions and movement logic
+	if collision_shape:
+		collision_shape.set_deferred("disabled", true)
+	if hp_bar:
+		hp_bar.visible = false
+		
 	# Give XP to player
 	if player and player.has_method("gain_xp"):
 		Global.add_gold(gold_reward)
@@ -87,4 +124,10 @@ func die():
 			Global.console_log("Lucky! %dx XP from enemy kill." % xp_mult)
 			
 		player.gain_xp(xp_reward * xp_mult)
+	
+	# Death Animation
+	if sprite and sprite.sprite_frames.has_animation("death"):
+		sprite.play("death")
+		await sprite.animation_finished
+	
 	queue_free()
