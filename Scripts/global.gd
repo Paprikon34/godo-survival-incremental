@@ -8,13 +8,17 @@ var save_data: Dictionary = {
 	"upgrades": {
 		"health": 0,
 		"damage": 0,
-		"speed": 0
-	}
+		"speed": 0,
+		"regeneration": 0
+	},
+	"disabled_upgrades": []
 }
 
 const SAVE_PATH = "user://savegame.save"
 
+var dps_enabled: bool = true
 signal console_log_emitted(text: String)
+signal damage_dealt(amount: float)
 
 func console_log(text: String):
 	print(text) # Still print to editor output
@@ -45,7 +49,9 @@ func load_data():
 	
 	# Verify types
 	if typeof(save_data.upgrades) != TYPE_DICTIONARY:
-		save_data.upgrades = { "health": 0, "damage": 0, "speed": 0 }
+		save_data.upgrades = { "health": 0, "damage": 0, "speed": 0, "regeneration": 0 }
+	if typeof(save_data.disabled_upgrades) != TYPE_ARRAY:
+		save_data.disabled_upgrades = []
 
 func save_game():
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)

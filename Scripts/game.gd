@@ -42,6 +42,7 @@ var active_bosses = []
 # New UI References
 @onready var time_label = $CanvasLayer/UI/TimeLabel
 var gold_label: Label
+var dps_label: Label
 @onready var fps_label = $CanvasLayer/UI/FPSLabel
 @onready var xp_bar = $CanvasLayer/UI/XPBar
 @onready var pause_menu = $CanvasLayer/UI/PauseMenu
@@ -62,6 +63,7 @@ var gold_label: Label
 var elapsed_time: float = 0.0
 var current_upgrades = []
 var upgrade_counts = {}
+var damage_history = [] # Rolling window of [timestamp, amount]
 
 @onready var chest_popup = $CanvasLayer/UI/ChestRewardPopup
 @onready var chest_reward_label = $CanvasLayer/UI/ChestRewardPopup/RewardLabel
@@ -90,6 +92,16 @@ func _ready():
 		
 	if fps_label:
 		fps_label.visible = Global.fps_enabled
+		
+	# Create DPS Label dynamically
+	dps_label = Label.new()
+	dps_label.position = Vector2(gold_label.position.x, gold_label.position.y + 30)
+	dps_label.add_theme_font_size_override("font_size", 18)
+	dps_label.add_theme_color_override("font_color", Color.INDIAN_RED)
+	$CanvasLayer/UI.add_child(dps_label)
+	dps_label.visible = Global.dps_enabled
+	
+	Global.damage_dealt.connect(_on_damage_dealt)
 	
 	for i in range(option_buttons.size()):
 		option_buttons[i].pressed.connect(_on_upgrade_selected.bind(i))
@@ -250,6 +262,7 @@ func update_detailed_upgrade_list():
 			"wand": desc = "-%d%% Cooldown" % [lvl * 10]
 			"vitality": desc = "+%d%% Max HP" % [lvl * 10]
 			"luck": desc = "+%d%% Luck" % [lvl * 10]
+			"regeneration": desc = "+%.1f HP/s" % [lvl * 0.1]
 			_: desc = "Lvl %d" % [lvl]
 		
 		var l = Label.new()
@@ -363,14 +376,16 @@ func update_stats_label():
 		var xp_pct = int(player.xp_multiplier * 100)
 		var luck_pct = int(player.luck_multiplier * 100)
 		
-		stats_label.text = "Player Stats:\nLvl: %d\nHP: %d/%d\nSpeed: %d\nDamage: %d%%\nXP Gain: %d%%\nLuck: %d%%" % [
+		stats_label.text = "Player Stats:\nLvl: %d\nHP: %d/%d\nRegen: %.1f/s\nSpeed: %d\nDamage: %d%%\nXP Gain: %d%%\nLuck: %d%%\nDefense: %.1f" % [
 			player.level,
 			player.health,
 			player.max_health,
+			player.regeneration,
 			player.speed,
 			dmg_pct,
 			xp_pct,
-			luck_pct
+			luck_pct,
+			player.defense
 		]
 
 func _on_resume_pressed():
@@ -394,6 +409,22 @@ func _process(delta):
 			fps_label.modulate = Color.RED
 		else:
 			fps_label.modulate = Color.YELLOW
+			
+	# Update DPS
+	if dps_label.visible:
+		var window = 2.0 # 2 second rolling window
+		var now = Time.get_ticks_msec() / 1000.0
+		# Clean old events
+		while damage_history.size() > 0 and now - damage_history[0][0] > window:
+			damage_history.pop_front()
+		
+		# Sum damage
+		var total_dmg = 0.0
+		for event in damage_history:
+			total_dmg += event[1]
+			
+		var dps = total_dmg / window
+		dps_label.text = "DPS: %d" % int(dps)
 		
 	elapsed_time += delta
 	spawn_timer += delta
@@ -424,16 +455,25 @@ func _process(delta):
 			spawn_enemy_by_type(type)
 	
 	# 2.5 Minimum Density Check (Enforcement)
-	var min_enemies = 5 # Active from the start (0-1 min)
+	var min_enemies = 10
+	if elapsed_time < 120.0:
+		min_enemies = 7 # 7 enemies during the first two minutes
 	
-	# Only enforce if we have an active wave to pick enemies from
-	if active_wave_data and active_wave_data.has("enemies"):
+	# Only enforce if we have an active wave AND it's not a boss wave
+	# This prevents spawning multiple bosses if the player is too efficient
+	if active_wave_data and active_wave_data.has("enemies") and active_wave_data.get("type") != "boss":
 		var current_enemies = get_tree().get_nodes_in_group("enemy").size()
 		if current_enemies < min_enemies:
 			var to_spawn = min_enemies - current_enemies
-			for i in range(to_spawn):
-				var type = active_wave_data.enemies.pick_random()
-				spawn_enemy_by_type(type)
+			# Filter to ensure we only spawn regular enemies for density
+			var regular_enemies = active_wave_data.enemies.filter(func(e): 
+				return e not in ["boss_1", "boss_2", "elite_boss", "splitting_boss"]
+			)
+			
+			if regular_enemies.size() > 0:
+				for i in range(to_spawn):
+					var type = regular_enemies.pick_random()
+					spawn_enemy_by_type(type)
 	
 	# 3. UI Update Safety
 	if not time_label:
@@ -696,3 +736,6 @@ func _on_force_spawn():
 		spawn_enemy_by_type(type)
 	else:
 		Global.console_log("Manual Spawn Failed: No active wave data!")
+
+func _on_damage_dealt(amount: float):
+	damage_history.append([Time.get_ticks_msec() / 1000.0, amount])

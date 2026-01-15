@@ -45,8 +45,19 @@ Fires purple projectiles directly towards your mouse cursor.
 | **Piercing** | Projectiles pierce **+1 Enemy**. |
 | **Despair** | Enemies get **+5% Speed/HP**, but you get **+10% XP**. |
 | **Defense** | Increases Defense by **+2.5**. |
+| **Regeneration** | Increases Regen by **+0.1 HP/s**. |
 
 ---
+
+## 💎 Permanent Upgrades
+Available in the Main Menu using Gold. Can be disabled at any time.
+
+| Upgrade | Effect | Max Level |
+| :--- | :--- | :--- |
+| **Max Health** | +10 Base HP | 5 |
+| **Damage** | +5% Damage | 5 |
+| **Speed** | +20 Movement Speed | 3 |
+| **Regeneration** | +0.5 HP/s Regen | 3 |
 
 ## 👹 Enemies
 All enemies scale with your level: **+0.5 HP per player level up**.
@@ -88,9 +99,9 @@ Spawns after 5 minutes.
 
 ### 💀 Bosses
 Large red enemies that drop **Golden Chests**.
-- **Boss 1 (1:30)**: 300 HP, 80 Speed, **500 XP Bounty**.
-- **Boss 2 (3:00)**: 600 HP, 90 Speed, **1000 XP Bounty**.
-- **Elite Boss (4:00)**: 1000 HP, 100 Speed, **2000 XP Bounty**.
+- **Boss 1 (1:30)**: 400 HP, 80 Speed, **500 XP Bounty**.
+- **Boss 2 (3:00)**: 700 HP, 90 Speed, **1000 XP Bounty**.
+- **Elite Boss (4:00)**: 1100 HP, 100 Speed, **2000 XP Bounty**.
 - **Void Splitter (5:00)**: 1500 HP, 70 Speed, **3000 XP Bounty**.
 
 ---
@@ -107,7 +118,10 @@ Dropped by Bosses. Grants a **free level** to one of your currently owned upgrad
 	- **Final Rate (10m)**: 1 enemy every 0.4s
 	- **Ramp Time**: 600 seconds (10 minutes)
 	- **Spawn Distance**: ~730px from player (off-screen radius).
-4. **Minimum Density**: The game ensures there are always at least **5 enemies** on screen starting from the beginning of the match.
+4. **Minimum Density**: 
+	- **0:00 - 2:00**: Minimum **7 enemies**.
+	- **2:00+**: Minimum **10 enemies**.
+	Drops/raises dynamically to maintain pacing and challenge.
 
 ### 🍀 Luck Mechanics
 Luck multiplier (default 100%) increases the probability of "Lucky" events. There is a **5% base chance** for these events even at 100% Luck.

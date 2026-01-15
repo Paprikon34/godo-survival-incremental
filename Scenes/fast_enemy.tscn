@@ -119,6 +119,7 @@ animation = &"move"
 frame_progress = 0.9600793
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+texture_filter = 1
 position = Vector2(-1, -2.5)
-scale = Vector2(3, 3)
+scale = Vector2(4.68, 4.68)
 shape = SubResource("RectangleShape2D_1")

@@ -21,19 +21,28 @@ var regen_timer: float = 0.0
 func _ready():
 	# Apply Permanent Upgrades
 	var upgrades = Global.save_data.upgrades
+	var disabled = Global.save_data.get("disabled_upgrades", [])
 	
 	# Health: +10 per level (Max 5)
-	var hp_bonus = upgrades.health * 10
-	max_health += hp_bonus
+	if "health" not in disabled:
+		var hp_bonus = upgrades.health * 10
+		max_health += hp_bonus
 	health = max_health # Restore full HP
 	
 	# Speed: +20 per level (Max 3)
-	var speed_bonus = upgrades.speed * 20
-	speed += speed_bonus
+	if "speed" not in disabled:
+		var speed_bonus = upgrades.speed * 20
+		speed += speed_bonus
 	
 	# Damage: +5% per level (Max 5)
-	var dmg_bonus = upgrades.damage * 0.05
-	damage_multiplier += dmg_bonus
+	if "damage" not in disabled:
+		var dmg_bonus = upgrades.damage * 0.05
+		damage_multiplier += dmg_bonus
+		
+	# Regeneration: +0.5 per level (Max 3)
+	if "regeneration" not in disabled:
+		var regen_bonus = upgrades.get("regeneration", 0) * 0.5
+		regeneration += regen_bonus
 	
 	if hp_bar:
 		hp_bar.max_value = max_health

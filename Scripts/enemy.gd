@@ -79,6 +79,7 @@ func take_damage(amount: float):
 	if is_dead: return
 	
 	health -= amount
+	Global.damage_dealt.emit(amount)
 	if hp_bar:
 		hp_bar.value = health
 	# Global.console_log("Enemy took " + str(amount) + " damage. Remaining HP: " + str(health))

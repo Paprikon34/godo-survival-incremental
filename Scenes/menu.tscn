@@ -80,6 +80,10 @@ text = "Enable Cheats"
 layout_mode = 2
 text = "Show FPS"
 
+[node name="DPSCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer"]
+layout_mode = 2
+text = "Show DPS"
+
 [node name="BackButton" type="Button" parent="SettingsPanel/VBoxContainer"]
 layout_mode = 2
 text = "Back"
@@ -90,4 +94,5 @@ text = "Back"
 [connection signal="toggled" from="SettingsPanel/VBoxContainer/DebugCheck" to="." method="_on_debug_check_toggled"]
 [connection signal="toggled" from="SettingsPanel/VBoxContainer/CheatsCheck" to="." method="_on_cheats_check_toggled"]
 [connection signal="toggled" from="SettingsPanel/VBoxContainer/FPSCheck" to="." method="_on_fps_check_toggled"]
+[connection signal="toggled" from="SettingsPanel/VBoxContainer/DPSCheck" to="." method="_on_dps_check_toggled"]
 [connection signal="pressed" from="SettingsPanel/VBoxContainer/BackButton" to="." method="_on_back_button_pressed"]

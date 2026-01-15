@@ -4,6 +4,7 @@ extends Control
 @onready var debug_check = $SettingsPanel/VBoxContainer/DebugCheck
 @onready var cheats_check = $SettingsPanel/VBoxContainer/CheatsCheck
 @onready var fps_check = $SettingsPanel/VBoxContainer/FPSCheck
+@onready var dps_check = $SettingsPanel/VBoxContainer/DPSCheck
 
 var upgrades_panel: Panel
 var gold_display: Label
@@ -14,23 +15,30 @@ func _ready():
 	debug_check.button_pressed = Global.debug_enabled
 	cheats_check.button_pressed = Global.cheats_enabled
 	fps_check.button_pressed = Global.fps_enabled
+	dps_check.button_pressed = Global.dps_enabled
 	
-	_setup_upgrades_ui()
-
-func _setup_upgrades_ui():
-	# 1. Create Upgrades Button
+	# 1. Create Upgrades Button (Main Menu)
 	var btn = Button.new()
 	btn.text = "Upgrades"
 	btn.position = Vector2(50, 300) # Adjust as needed
 	btn.size = Vector2(200, 50)
 	btn.pressed.connect(func(): _open_upgrades_panel())
 	add_child(btn)
-	
-	# 2. Create Panel
+
+	# 2. Register Upgrades (ensure they exist in row registry before UI init)
+	_register_upgrade("health", "Max Health (+10)", 100, 5)
+	_register_upgrade("damage", "Damage (+5%)", 150, 5)
+	_register_upgrade("speed", "Speed (+20)", 120, 3)
+	_register_upgrade("regeneration", "HP Regen (+0.5/s)", 200, 3)
+
+	_setup_upgrades_ui()
+
+func _setup_upgrades_ui():
+	# 3. Create Panel
 	upgrades_panel = Panel.new()
 	upgrades_panel.visible = false
-	upgrades_panel.size = Vector2(400, 400)
-	upgrades_panel.position = Vector2((get_viewport_rect().size.x - 400)/2, (get_viewport_rect().size.y - 400)/2)
+	upgrades_panel.size = Vector2(450, 450)
+	upgrades_panel.position = Vector2((get_viewport_rect().size.x - 450)/2, (get_viewport_rect().size.y - 450)/2)
 	add_child(upgrades_panel)
 	
 	# Title
@@ -38,7 +46,7 @@ func _setup_upgrades_ui():
 	title.text = "Permanent Upgrades"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.position = Vector2(0, 10)
-	title.size = Vector2(400, 30)
+	title.size = Vector2(450, 30)
 	upgrades_panel.add_child(title)
 	
 	# Gold Display
@@ -46,43 +54,85 @@ func _setup_upgrades_ui():
 	gold_display.position = Vector2(20, 50)
 	gold_display.add_theme_color_override("font_color", Color.GOLD)
 	upgrades_panel.add_child(gold_display)
+
+	# Disable All Button
+	var disable_all_btn = Button.new()
+	disable_all_btn.text = "Disable All"
+	disable_all_btn.position = Vector2(300, 45)
+	disable_all_btn.size = Vector2(120, 30)
+	disable_all_btn.pressed.connect(_on_disable_all_pressed)
+	upgrades_panel.add_child(disable_all_btn)
 	
 	# Close Button
 	var close = Button.new()
 	close.text = "Close"
-	close.position = Vector2(150, 360)
+	close.position = Vector2(175, 400)
 	close.size = Vector2(100, 30)
 	close.pressed.connect(func(): upgrades_panel.visible = false)
 	upgrades_panel.add_child(close)
 	
 	# Upgrade Rows
-	_create_upgrade_row("health", "Max Health (+10)", 100, 5, 80)
-	_create_upgrade_row("damage", "Damage (+5%)", 150, 5, 130)
-	_create_upgrade_row("speed", "Speed (+20)", 120, 3, 180)
+	_create_upgrade_ui_rows()
 
-func _create_upgrade_row(id: String, name: String, base_cost: int, max_lvl: int, y_pos: float):
-	var container = Control.new()
-	container.position = Vector2(20, y_pos)
-	upgrades_panel.add_child(container)
-	
-	var label = Label.new()
-	label.position = Vector2(0, 0)
-	container.add_child(label)
-	
-	var buy_btn = Button.new()
-	buy_btn.position = Vector2(200, 0)
-	buy_btn.size = Vector2(140, 30)
-	container.add_child(buy_btn)
-	
+func _register_upgrade(id: String, name: String, base_cost: int, max_lvl: int):
 	upgrade_rows[id] = {
-		"label": label,
-		"btn": buy_btn,
 		"base": base_cost,
 		"max": max_lvl,
-		"name": name
+		"name": name,
+		"label": null,
+		"buy_btn": null,
+		"toggle_btn": null
 	}
-	
-	buy_btn.pressed.connect(func(): _try_buy_upgrade(id))
+
+func _create_upgrade_ui_rows():
+	var y_pos = 100
+	for id in upgrade_rows:
+		var row = upgrade_rows[id]
+		var container = Control.new()
+		container.position = Vector2(20, y_pos)
+		upgrades_panel.add_child(container)
+		
+		var label = Label.new()
+		label.position = Vector2(0, 0)
+		container.add_child(label)
+		row.label = label
+		
+		var buy_btn = Button.new()
+		buy_btn.position = Vector2(180, 0)
+		buy_btn.size = Vector2(120, 40)
+		container.add_child(buy_btn)
+		row.buy_btn = buy_btn
+		buy_btn.pressed.connect(func(): _try_buy_upgrade(id))
+		
+		var toggle_btn = Button.new()
+		toggle_btn.position = Vector2(310, 0)
+		toggle_btn.size = Vector2(100, 40)
+		container.add_child(toggle_btn)
+		row.toggle_btn = toggle_btn
+		toggle_btn.pressed.connect(func(): _toggle_upgrade_disabled(id))
+		
+		y_pos += 60
+
+func _on_disable_all_pressed():
+	var disabled = Global.save_data.get("disabled_upgrades", [])
+	# If anything is enabled, disable everything. If everything is already disabled, enable all?
+	# Let's just make it "Disable All" as requested.
+	for id in upgrade_rows:
+		if id not in disabled:
+			disabled.append(id)
+	Global.save_data["disabled_upgrades"] = disabled
+	Global.save_game()
+	_update_upgrades_ui()
+
+func _toggle_upgrade_disabled(id: String):
+	var disabled = Global.save_data.get("disabled_upgrades", [])
+	if id in disabled:
+		disabled.erase(id)
+	else:
+		disabled.append(id)
+	Global.save_data["disabled_upgrades"] = disabled
+	Global.save_game()
+	_update_upgrades_ui()
 
 func _open_upgrades_panel():
 	upgrades_panel.visible = true
@@ -90,6 +140,7 @@ func _open_upgrades_panel():
 
 func _update_upgrades_ui():
 	gold_display.text = "Gold: %d" % Global.save_data.gold
+	var disabled = Global.save_data.get("disabled_upgrades", [])
 	
 	for id in upgrade_rows:
 		var row = upgrade_rows[id]
@@ -99,11 +150,20 @@ func _update_upgrades_ui():
 		row.label.text = "%s\nLvl: %d / %d" % [row.name, lvl, row.max]
 		
 		if lvl >= row.max:
-			row.btn.text = "MAXED"
-			row.btn.disabled = true
+			row.buy_btn.text = "MAXED"
+			row.buy_btn.disabled = true
 		else:
-			row.btn.text = "Buy (%d G)" % cost
-			row.btn.disabled = Global.save_data.gold < cost
+			row.buy_btn.text = "Buy (%d G)" % cost
+			row.buy_btn.disabled = Global.save_data.gold < cost
+			
+		if id in disabled:
+			row.toggle_btn.text = "Disabled"
+			row.toggle_btn.modulate = Color.RED
+			row.label.modulate = Color(0.5, 0.5, 0.5, 1.0)
+		else:
+			row.toggle_btn.text = "Enabled"
+			row.toggle_btn.modulate = Color.GREEN
+			row.label.modulate = Color.WHITE
 
 func _try_buy_upgrade(id: String):
 	var row = upgrade_rows[id]
@@ -138,3 +198,6 @@ func _on_cheats_check_toggled(toggled_on):
 
 func _on_fps_check_toggled(toggled_on):
 	Global.fps_enabled = toggled_on
+
+func _on_dps_check_toggled(toggled_on):
+	Global.dps_enabled = toggled_on

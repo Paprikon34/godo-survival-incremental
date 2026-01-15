@@ -77,6 +77,13 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "defense",
 		"weight": 8
+	},
+	{
+		"name": "Regeneration",
+		"description": "Regen +0.1 HP/s",
+		"type": "stat",
+		"id": "regeneration",
+		"weight": 5
 	}
 ]
 
@@ -161,3 +168,6 @@ static func apply_upgrade(player: Node, upgrade_id: String):
 		"defense":
 			if "defense" in player:
 				player.defense += 2.5
+		"regeneration":
+			if "regeneration" in player:
+				player.regeneration += 0.1

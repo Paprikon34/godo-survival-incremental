@@ -7,7 +7,7 @@
 script = ExtResource("1_script")
 name = "Boss I"
 scene = ExtResource("2_scene")
-health = 300.0
+health = 400.0
 speed = 80.0
 xp_reward = 500.0
 is_boss = true
