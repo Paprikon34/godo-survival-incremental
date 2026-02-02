@@ -6,8 +6,8 @@ extends Node2D
 
 var current_cooldown: float = 0.0
 
-func _process(delta):
-	current_cooldown -= delta
+func _process(_delta):
+	current_cooldown -= _delta
 	if current_cooldown <= 0:
 		var target = find_nearest_enemy()
 		if target:

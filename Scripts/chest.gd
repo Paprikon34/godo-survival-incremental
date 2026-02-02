@@ -15,8 +15,8 @@ func _on_body_entered(body):
 	
 	if body.is_in_group("player"):
 		collected = true
-		var game = body.get_parent()
-		if game.has_method("on_chest_collected"):
+		var game = get_tree().get_first_node_in_group("game")
+		if game and game.has_method("on_chest_collected"):
 			game.on_chest_collected()
 		
 		if sprite:

@@ -27,6 +27,10 @@ func _ready():
 	hp_bar.max_value = max_health
 	hp_bar.value = health
 	
+	# Force collision bits for Arena Boss
+	collision_layer = 2 # Enemy layer
+	collision_mask = 1  # Hit player
+	
 	# Register with game UI if possible
 	var game = get_tree().get_first_node_in_group("game")
 	if game and game.has_method("add_active_boss"):
@@ -34,8 +38,8 @@ func _ready():
 
 func start_boss_fight():
 	# Intro animation: land from above
-	var start_pos = global_position + Vector2(0, -500)
 	var target_pos = global_position
+	var start_pos = global_position + Vector2(0, -500)
 	global_position = start_pos
 	
 	sprite.modulate.a = 0
@@ -123,28 +127,39 @@ func shoot_circular():
 		spawn_projectile(dir)
 
 func spawn_projectile(direction: Vector2):
-	var bullet_scene = load("res://Scenes/projectile.tscn")
-	if bullet_scene:
-		var b = bullet_scene.instantiate()
-		b.global_position = global_position
-		# Projectile needs to know it's from the boss
-		if b.has_method("setup"):
-			b.setup(direction, 350.0, damage)
-		else:
-			# Direct property assignment
-			b.direction = direction
-			b.speed = 350.0 # Slightly faster
-			b.damage = damage
-			b.target_group = "player" # Boss hits player
-			
-		get_parent().add_child(b)
-		# Ensure projectile moves during pause
-		b.process_mode = Node.PROCESS_MODE_ALWAYS
+	var projectile = Area2D.new()
+	var b_sprite = Sprite2D.new()
+	b_sprite.texture = load("res://icon.svg")
+	b_sprite.scale = Vector2(0.25, 0.25)
+	b_sprite.modulate = Color(1.0, 0.2, 0.2)
+	projectile.add_child(b_sprite)
+	
+	var collision = CollisionShape2D.new()
+	var shape = CircleShape2D.new()
+	shape.radius = 12
+	collision.shape = shape
+	projectile.add_child(collision)
+	
+	projectile.set_script(preload("res://Scripts/projectile.gd"))
+	
+	projectile.global_position = global_position
+	projectile.set("direction", direction)
+	projectile.set("speed", 400.0)
+	projectile.set("damage", damage)
+	projectile.set("target_group", "player")
+	
+	projectile.collision_mask = 1
+	projectile.collision_layer = 0
+	
+	get_parent().add_child(projectile)
 
 func take_damage(amount: float):
 	if is_dead: return
 	health -= amount
-	hp_bar.value = health
+	if hp_bar: hp_bar.value = health
+	
+	Global.console_log("Boss took damage: %.1f. HP: %.1f/%.1f" % [amount, health, max_health])
+		
 	if health <= 0:
 		die()
 

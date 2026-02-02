@@ -74,11 +74,11 @@ func _setup_upgrades_ui():
 	# Upgrade Rows
 	_create_upgrade_ui_rows()
 
-func _register_upgrade(id: String, name: String, base_cost: int, max_lvl: int):
+func _register_upgrade(id: String, upgrade_name: String, base_cost: int, max_lvl: int):
 	upgrade_rows[id] = {
 		"base": base_cost,
 		"max": max_lvl,
-		"name": name,
+		"name": upgrade_name,
 		"label": null,
 		"buy_btn": null,
 		"toggle_btn": null

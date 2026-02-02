@@ -10,7 +10,6 @@ var boss_node: Node2D = null
 signal boss_defeated
 
 func _ready():
-	process_mode = Node.PROCESS_MODE_ALWAYS # Arena must run while game world is disabled
 	spawn_boss()
 
 func spawn_boss():
@@ -30,9 +29,8 @@ func spawn_boss():
 	
 	if boss_scene:
 		boss_node = boss_scene.instantiate()
-		boss_node.global_position = spawn_pos.global_position
-		boss_node.process_mode = Node.PROCESS_MODE_ALWAYS
 		add_child(boss_node)
+		boss_node.global_position = spawn_pos.global_position
 		
 		# Set up special AI
 		if boss_node.has_method("start_boss_fight"):

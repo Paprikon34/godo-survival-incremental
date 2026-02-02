@@ -7,7 +7,7 @@ func _init():
 
 const ProjectileScript = preload("res://Scripts/projectile.gd")
 
-func fire(target: Node2D):
+func fire(_target: Node2D):
 	# Override normal fire behavior
 	# We want to fire at mouse, not nearest enemy
 	pass

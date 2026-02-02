@@ -19,6 +19,10 @@ var regen_timer: float = 0.0
 @onready var hp_bar = get_node_or_null("HealthBar")
 
 func _ready():
+	# Force collision bits
+	collision_layer = 1 # Player layer
+	collision_mask = 2  # Hit enemies
+	
 	# Apply Permanent Upgrades
 	var upgrades = Global.save_data.upgrades
 	var disabled = Global.save_data.get("disabled_upgrades", [])
@@ -75,7 +79,9 @@ func take_damage(amount: float):
 	var damage_taken = max(0.0, amount - defense)
 	health -= damage_taken
 	update_hp_bar()
-	# print("Player took damage: ", amount, " Current health: ", health) # Commented out spam
+	
+	Global.console_log("Player took damage: %.1f. HP: %d/%d" % [damage_taken, health, max_health])
+	
 	if health <= 0:
 		die()
 
@@ -87,7 +93,7 @@ func gain_xp(amount: float):
 		_trigger_level_up()
 
 func _trigger_level_up():
-	experience -= level * 100
+	experience -= level * 80 # Match the requirement
 	level += 1
 	emit_signal("level_up")
 	Global.console_log("Level Up! New Level: " + str(level))

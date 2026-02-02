@@ -34,6 +34,9 @@ var level_ups_pending: int = 0
 var active_bosses = []
 var current_arena = null
 var gameplay_world: Node2D # Persistent container for the main world
+var pointer_container: Control
+var active_pointers = {} # target: pointer_node
+var pre_arena_pos: Vector2 = Vector2.ZERO
 
 
 
@@ -109,6 +112,10 @@ func _ready():
 	for i in range(option_buttons.size()):
 		option_buttons[i].pressed.connect(_on_upgrade_selected.bind(i))
 		
+	# Initialize starting weapon in upgrade counts
+	upgrade_counts["magic_shotgun"] = 1
+	update_upgrade_list_ui()
+
 	chest_ok_button.pressed.connect(_on_chest_ok_pressed)
 	
 	# Debug Console Init
@@ -139,6 +146,15 @@ func _ready():
 	stats_panel.process_mode = Node.PROCESS_MODE_ALWAYS
 	detailed_upgrade_list.process_mode = Node.PROCESS_MODE_ALWAYS
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	
+	# Create Pointer Container
+	pointer_container = Control.new()
+	pointer_container.name = "PointerContainer"
+	pointer_container.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	pointer_container.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	$CanvasLayer/UI.add_child(pointer_container)
+	pointer_container.show()
+	
 	add_to_group("game")
 	
 	# SETUP WORLD SWAPPING HIERARCHY
@@ -297,11 +313,20 @@ func update_detailed_upgrade_list():
 
 func on_chest_collected():
 	Global.console_log("Chest collected!")
+	
+	# Ensure upgrade_counts is correctly populated with at least the starting weapon if missing
+	if upgrade_counts.is_empty():
+		upgrade_counts["magic_shotgun"] = 1
+		
 	# Get list of existing upgrades (excluding heal)
 	var available_upgrades = []
 	for id in upgrade_counts:
 		if id != "heal":
 			available_upgrades.append(id)
+			
+	# If for some reason it's still empty, just grab one from DB
+	if available_upgrades.is_empty():
+		available_upgrades.append("magic_shotgun")
 			
 	if available_upgrades.size() > 0:
 		var num_rewards = 1
@@ -318,12 +343,10 @@ func on_chest_collected():
 			
 		# Gold Reward Logic
 		var base_gold_options = [100, 150, 200, 250, 500]
-		# Luck influences chance for better gold
 		var gold_roll = randf()
 		var gold_idx = 0
-		
-		# Simple weighted logic influenced by luck
 		var luck_factor = player.luck_multiplier
+		
 		if gold_roll < 0.05 * luck_factor: gold_idx = 4 # 500
 		elif gold_roll < 0.15 * luck_factor: gold_idx = 3 # 250
 		elif gold_roll < 0.3 * luck_factor: gold_idx = 2 # 200
@@ -331,8 +354,6 @@ func on_chest_collected():
 		else: gold_idx = 0 # 100
 		
 		var gold_amount = base_gold_options[gold_idx]
-		
-		# Multiplier applies to gold too
 		if num_rewards == 3: gold_amount *= 3
 		elif num_rewards == 2: gold_amount *= 2
 		
@@ -343,7 +364,7 @@ func on_chest_collected():
 			var random_id = available_upgrades.pick_random()
 			UpgradeDB.apply_upgrade(player, random_id)
 			upgrade_counts[random_id] = upgrade_counts.get(random_id, 0) + 1
-			reward_text += "%s +1 Level\n" % random_id.capitalize()
+			reward_text += "%s +1 Level\n" % random_id.replace("_", " ").capitalize()
 		
 		# Update UIs
 		update_upgrade_list_ui()
@@ -354,7 +375,6 @@ func on_chest_collected():
 		chest_reward_label.text = reward_text
 		chest_popup.visible = true
 	else:
-		# Fallback if maxed or no upgrades? (Rare logic, but safe to just print)
 		Global.console_log("No valid upgrades for chest.")
 
 func _on_chest_ok_pressed():
@@ -363,8 +383,11 @@ func _on_chest_ok_pressed():
 
 func enter_boss_arena(boss_type: String):
 	Global.console_log("Entering Boss Arena for: " + boss_type)
-	get_tree().paused = true
+	get_tree().paused = false # Ensure physics run
 	
+	if player:
+		pre_arena_pos = player.global_position
+
 	# Show Loading Screen
 	var loading_scene = load("res://Scenes/loading_screen.tscn")
 	var loading_screen = loading_scene.instantiate()
@@ -382,35 +405,34 @@ func enter_boss_arena(boss_type: String):
 	var arena_scene = load("res://Scenes/boss_arena.tscn")
 	if not arena_scene:
 		Global.console_log("Error: Boss Arena scene not found!")
-		get_tree().paused = false
 		loading_screen.queue_free()
 		return
 		
 	current_arena = arena_scene.instantiate()
 	current_arena.boss_type = boss_type
-	current_arena.process_mode = Node.PROCESS_MODE_ALWAYS
+	# Position arena FAR away to prevent physics overlap with main world
+	current_arena.global_position = Vector2(10000, 10000)
 	add_child(current_arena)
 	move_child(current_arena, 0)
 	
-	# WORLD SWAP: Hide regular world and move player to arena
+	# WORLD SWAP: Manually disable main world
 	if gameplay_world:
 		gameplay_world.visible = false
 		gameplay_world.process_mode = Node.PROCESS_MODE_DISABLED
 	
 	if player:
 		player.reparent(current_arena)
-		player.global_position = current_arena.get_node("PlayerPos").global_position
-		player.process_mode = Node.PROCESS_MODE_ALWAYS
+		player.global_position = current_arena.global_position + current_arena.get_node("PlayerPos").position
+		player.process_mode = Node.PROCESS_MODE_INHERIT
+		for child in player.get_children():
+			if child is Node2D:
+				child.process_mode = Node.PROCESS_MODE_INHERIT
 		
 	# Fade out Loading Screen
 	tween = create_tween()
 	tween.tween_property(loading_screen, "modulate:a", 0.0, 0.5)
 	await tween.finished
 	loading_screen.queue_free()
-	
-	# The arena script will handle spawning the boss and unpausing itself
-	# Note: We keep the main game paused so enemies don't move
-	# We need to make sure the player and arena have PROCESS_MODE_ALWAYS or similar
 
 func exit_boss_arena():
 	Global.console_log("Exiting Boss Arena")
@@ -430,10 +452,13 @@ func exit_boss_arena():
 	await get_tree().create_timer(0.5).timeout
 	
 	if player:
-		# WORLD SWAP: Return player to main world
+		# WORLD SWAP: Return player to main world at their previous location
 		player.reparent(self if not gameplay_world else gameplay_world)
-		player.global_position = Vector2.ZERO # Return to center
+		player.global_position = pre_arena_pos
 		player.process_mode = Node.PROCESS_MODE_PAUSABLE
+		for child in player.get_children():
+			if child is Node2D:
+				child.process_mode = Node.PROCESS_MODE_INHERIT
 	
 	if current_arena:
 		current_arena.queue_free()
@@ -442,8 +467,6 @@ func exit_boss_arena():
 	if gameplay_world:
 		gameplay_world.visible = true
 		gameplay_world.process_mode = Node.PROCESS_MODE_PAUSABLE
-	
-	get_tree().paused = false
 	
 	# Fade out Loading Screen
 	tween = create_tween()
@@ -511,10 +534,6 @@ func _on_quit_pressed():
 	get_tree().change_scene_to_file("res://Scenes/menu.tscn")
 
 func _process(delta):
-	# If paused, don't run game logic (spawning, timers)
-	if get_tree().paused:
-		return
-		
 	if fps_label.visible:
 		var fps = Engine.get_frames_per_second()
 		fps_label.text = "FPS: %d" % fps
@@ -540,6 +559,78 @@ func _process(delta):
 			
 		var dps = total_dmg / window
 		dps_label.text = "DPS: %d" % int(dps)
+
+	if gold_label:
+		gold_label.text = "Gold: %d" % Global.save_data.gold
+		
+	update_pointers(delta)
+	
+	if player:
+		# XP Bar is 0 to 100% of current level requirement
+		var required_xp = player.level * 80
+		xp_bar.max_value = required_xp
+		xp_bar.value = player.experience
+		label.text = "HP: %d | Lvl: %d" % [player.health, player.level]
+
+	# Boss Bar Logic
+	if active_bosses.size() > 0:
+		active_bosses = active_bosses.filter(func(e): return is_instance_valid(e))
+	
+	for child in boss_bar_container.get_children():
+		child.queue_free()
+		
+	if active_bosses.size() > 0:
+		# Filter bosses: if in arena, only show arena bosses. If not, only show main world bosses.
+		var bosses_to_show = []
+		for boss in active_bosses:
+			if current_arena:
+				# Check if boss is inside the arena
+				if current_arena.is_ancestor_of(boss):
+					bosses_to_show.append(boss)
+			else:
+				# Show only main world bosses
+				if not boss.is_inside_tree(): continue
+				var boss_parent = boss.get_parent()
+				if boss_parent == gameplay_world or boss_parent == self:
+					bosses_to_show.append(boss)
+
+		if bosses_to_show.size() > 0:
+			boss_bar_container.visible = true
+			for boss in bosses_to_show:
+				var bar_panel = Panel.new()
+				bar_panel.custom_minimum_size = Vector2(0, 25)
+				boss_bar_container.add_child(bar_panel)
+				
+				var bar = ProgressBar.new()
+				bar.modulate = Color(1, 0, 0, 1)
+				bar.show_percentage = false
+				bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				if "max_health" in boss:
+					bar.max_value = boss.max_health
+				if "health" in boss:
+					bar.value = boss.health
+				bar_panel.add_child(bar)
+				
+				var name_label = Label.new()
+				var b_name = "BOSS"
+				if "stats" in boss and boss.stats and boss.stats.name != "":
+					b_name = boss.stats.name
+				name_label.text = b_name
+				name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+				name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+				name_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+				name_label.add_theme_font_size_override("font_size", 12)
+				name_label.add_theme_constant_override("outline_size", 4)
+				name_label.add_theme_color_override("font_outline_color", Color(0,0,0,1))
+				bar_panel.add_child(name_label)
+		else:
+			boss_bar_container.visible = false
+	else:
+		boss_bar_container.visible = false
+
+	# If paused OR in arena, don't run regular game world logic (spawning, timers)
+	if get_tree().paused or current_arena != null:
+		return
 		
 	elapsed_time += delta
 	spawn_timer += delta
@@ -562,7 +653,10 @@ func _process(delta):
 				spawn_enemy_by_type(type)
 
 	# 2. Spawning Logic (Standard enemies)
-	if active_wave_data and active_wave_data.get("type") != "boss":
+	# Check for portals to suppress spawning until player returns from arena
+	var has_portal = get_tree().get_nodes_in_group("portal").size() > 0
+	
+	if active_wave_data and active_wave_data.get("type") != "boss" and not has_portal and active_bosses.size() == 0:
 		var interval = active_wave_data.get("interval", 2.0)
 		if spawn_timer >= interval:
 			spawn_timer = 0.0
@@ -574,9 +668,8 @@ func _process(delta):
 	if elapsed_time < 120.0:
 		min_enemies = 7 # 7 enemies during the first two minutes
 	
-	# Only enforce if we have an active wave AND it's not a boss wave
-	# This prevents spawning multiple bosses if the player is too efficient
-	if active_wave_data and active_wave_data.has("enemies") and active_wave_data.get("type") != "boss":
+	# Only enforce if we have an active wave AND it's not a boss wave, and no portals/bosses
+	if active_wave_data and active_wave_data.has("enemies") and active_wave_data.get("type") != "boss" and not has_portal and active_bosses.size() == 0:
 		var current_enemies = get_tree().get_nodes_in_group("enemy").size()
 		if current_enemies < min_enemies:
 			var to_spawn = min_enemies - current_enemies
@@ -597,55 +690,7 @@ func _process(delta):
 	var minutes = int(elapsed_time / 60)
 	var seconds = int(elapsed_time) % 60
 	time_label.text = "%02d:%02d" % [minutes, seconds]
-	
-	if gold_label:
-		gold_label.text = "Gold: %d" % Global.save_data.gold
-	
-	if player:
-		# XP Bar is 0 to 100% of current level requirement
-		# Since level up threshold is level * 80
-		var required_xp = player.level * 80
-		xp_bar.max_value = required_xp
-		xp_bar.value = player.experience
-		
-		# Keep debug label for stats
-		label.text = "HP: %d | Lvl: %d" % [player.health, player.level]
 
-	# Boss Bar Logic
-	if active_bosses.size() > 0:
-		active_bosses = active_bosses.filter(func(e): return is_instance_valid(e))
-	
-	for child in boss_bar_container.get_children():
-		child.queue_free()
-		
-	if active_bosses.size() > 0:
-		boss_bar_container.visible = true
-		for boss in active_bosses:
-			var bar_panel = Panel.new()
-			bar_panel.custom_minimum_size = Vector2(0, 25)
-			boss_bar_container.add_child(bar_panel)
-			
-			var bar = ProgressBar.new()
-			bar.modulate = Color(1, 0, 0, 1)
-			bar.show_percentage = false
-			bar.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			if "max_health" in boss:
-				bar.max_value = boss.max_health
-			if "health" in boss:
-				bar.value = boss.health
-			bar_panel.add_child(bar)
-			
-			var name_label = Label.new()
-			name_label.text = "BOSS"
-			name_label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
-			name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
-			name_label.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
-			name_label.add_theme_font_size_override("font_size", 12)
-			name_label.add_theme_constant_override("outline_size", 4)
-			name_label.add_theme_color_override("font_outline_color", Color(0,0,0,1))
-			bar_panel.add_child(name_label)
-	else:
-		boss_bar_container.visible = false
 
 	# Performance: Enemy Culling & Debug Info
 	var all_enemies = get_tree().get_nodes_in_group("enemy")
@@ -686,6 +731,98 @@ func update_all_enemies():
 		if "max_health" in enemy:
 			enemy.max_health *= 1.05
 	Global.console_log("Instant Buff: All current enemies speed/HP increased by 5%!")
+
+func update_pointers(_delta: float):
+	if not player: return
+	
+	var targets = get_tree().get_nodes_in_group("portal") + get_tree().get_nodes_in_group("chest")
+	
+	# Clear invalid pointers
+	for target in active_pointers.keys():
+		if not is_instance_valid(target) or not target.is_inside_tree() or not target.visible or target not in targets:
+			if is_instance_valid(active_pointers[target]):
+				active_pointers[target].queue_free()
+			active_pointers.erase(target)
+			
+	# Update or Create pointers
+	var cam = get_viewport().get_camera_2d()
+	if not cam: return
+	
+	var viewport_rect = get_viewport_rect()
+	var margin = 40.0
+	
+	for target in targets:
+		if not target.is_inside_tree() or not target.visible: continue
+		
+		# Get screen position
+		var screen_pos = target.get_global_transform_with_canvas().origin
+		
+		# If on screen, hide pointer
+		if viewport_rect.has_point(screen_pos):
+			if active_pointers.has(target):
+				active_pointers[target].visible = false
+			continue
+			
+		# Off screen: Create or Show pointer
+		var pointer
+		if active_pointers.has(target):
+			pointer = active_pointers[target]
+			pointer.visible = true
+		else:
+			pointer = Control.new()
+			var sprite = Sprite2D.new()
+			# Choose texture
+			if target.is_in_group("portal"):
+				sprite.texture = load("res://Sprites/portal/portal_idle_circular-removebg-preview.png")
+				sprite.modulate = Color(0, 1, 1) # Cyan for portal
+			else:
+				sprite.texture = load("res://Sprites/Animated Chests/Chests.png")
+				# If it's a sprite sheet, we might need to set the region
+				sprite.region_enabled = true
+				sprite.region_rect = Rect2(0, 0, 48, 48) # Assume first frame
+				
+			sprite.scale = Vector2(0.8, 0.8)
+			pointer.add_child(sprite)
+			
+			# Add arrow
+			var arrow = Polygon2D.new()
+			arrow.polygon = PackedVector2Array([Vector2(0, -15), Vector2(10, 5), Vector2(-10, 5)])
+			arrow.position = Vector2(0, -35)
+			arrow.color = Color.WHITE
+			pointer.add_child(arrow)
+			
+			pointer_container.add_child(pointer)
+			active_pointers[target] = pointer
+			
+		# Position pointer at edge
+		var center = viewport_rect.size / 2.0
+		var direction = (screen_pos - center).normalized()
+		
+		# Clamp to screen edges
+		var target_pos = center + direction * 1000.0 # Far out
+		
+		# Intersect with screen rect
+		var pointer_pos = Vector2.ZERO
+		
+		# Calculate intersection with viewport boundaries
+		var slope = direction.y / direction.x if direction.x != 0 else 1e10
+		
+		if direction.x > 0: # Right
+			pointer_pos.x = viewport_rect.size.x - margin
+			pointer_pos.y = center.y + (pointer_pos.x - center.x) * slope
+		else: # Left
+			pointer_pos.x = margin
+			pointer_pos.y = center.y + (pointer_pos.x - center.x) * slope
+			
+		if pointer_pos.y > viewport_rect.size.y - margin: # Bottom
+			pointer_pos.y = viewport_rect.size.y - margin
+			pointer_pos.x = center.x + (pointer_pos.y - center.y) / slope
+		elif pointer_pos.y < margin: # Top
+			pointer_pos.y = margin
+			pointer_pos.x = center.x + (pointer_pos.y - center.y) / slope
+			
+		pointer.position = pointer_pos
+		pointer.get_child(1).rotation = direction.angle() + PI/2.0 # Rotate arrow
 
 func spawn_enemy_by_type(type: String):
 	var scene: PackedScene = null
