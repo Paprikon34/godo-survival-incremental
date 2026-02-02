@@ -98,17 +98,19 @@ Spawns after 5 minutes.
 - **XP Bounty**: 50
 
 ### 💀 Bosses
-Large red enemies that drop **Golden Chests**.
-- **Boss 1 (1:30)**: 400 HP, 80 Speed, **500 XP Bounty**.
-- **Boss 2 (3:00)**: 700 HP, 90 Speed, **1000 XP Bounty**.
-- **Elite Boss (4:00)**: 1100 HP, 100 Speed, **2000 XP Bounty**.
-- **Void Splitter (5:00)**: 1500 HP, 70 Speed, **3000 XP Bounty**.
+Large red enemies that act as **Portal Guardians**.
+- **Boss 1 (1:30)**: 400 HP, 80 Speed.
+- **Boss 2 (3:00)**: 700 HP, 90 Speed.
+- **Elite Boss (4:00)**: 1100 HP, 100 Speed.
+- **Void Splitter (5:00)**: 1500 HP, 70 Speed.
+
+Upon defeat, Bosses spawn a **Dimensional Portal** instead of a chest. Entering this portal transports the player to a **Boss Arena** to fight the **Actual Boss**.
 
 ---
 
 ## ⚙️ Game Mechanics
 ### 📦 Golden Chests
-Dropped by Bosses. Grants a **free level** to one of your currently owned upgrades.
+Accessed by defeating the **Actual Boss** in the **Boss Arena**. Grants a **free level** to one of your currently owned upgrades.
 
 ### 📈 Scaling Difficulty
 1. **Level-Up**: Every time the player levels up, every enemy (current and future) gains **+0.5 HP**.

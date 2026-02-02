@@ -33,7 +33,7 @@ func _spawn_projectile(target: Node2D, index: int):
 	# Add script
 	projectile.set_script(ProjectileScript)
 	
-	projectile.process_mode = Node.PROCESS_MODE_PAUSABLE
+	projectile.process_mode = Node.PROCESS_MODE_ALWAYS
 	projectile.global_position = global_position
 	
 	# Apply spread if multiple

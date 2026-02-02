@@ -1,0 +1,24 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://Scripts/boss_arena.gd" id="1_script"]
+
+[node name="BossArena" type="Node2D"]
+script = ExtResource("1_script")
+
+[node name="Background" type="ColorRect" parent="."]
+offset_left = -2000.0
+offset_top = -2000.0
+offset_right = 2000.0
+offset_bottom = 2000.0
+color = Color(0.0588235, 0.0352941, 0.0862745, 1)
+
+[node name="ArenaBounds" type="StaticBody2D" parent="."]
+
+[node name="CollisionPolygon2D" type="CollisionPolygon2D" parent="ArenaBounds"]
+polygon = PackedVector2Array(-800, -800, 800, -800, 800, 800, -800, 800, -800, -800, -900, -900, -900, 900, 900, 900, 900, -900, -900, -900)
+
+[node name="PlayerPos" type="Marker2D" parent="."]
+position = Vector2(0, 400)
+
+[node name="SpawnPos" type="Marker2D" parent="."]
+position = Vector2(0, -300)

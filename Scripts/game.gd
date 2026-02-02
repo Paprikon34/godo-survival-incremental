@@ -32,6 +32,9 @@ var screen_size: Vector2
 var level_up_hp_bonus: float = 0.0
 var level_ups_pending: int = 0
 var active_bosses = []
+var current_arena = null
+var gameplay_world: Node2D # Persistent container for the main world
+
 
 
 
@@ -136,6 +139,28 @@ func _ready():
 	stats_panel.process_mode = Node.PROCESS_MODE_ALWAYS
 	detailed_upgrade_list.process_mode = Node.PROCESS_MODE_ALWAYS
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	add_to_group("game")
+	
+	# SETUP WORLD SWAPPING HIERARCHY
+	# We move everything that isn't UI into a "GameplayWorld" container
+	gameplay_world = Node2D.new()
+	gameplay_world.name = "GameplayWorld"
+	add_child(gameplay_world)
+	move_child(gameplay_world, 0) # Bottom layer
+	
+	# Move existing game nodes into the container
+	# We move everything that is a Node2D and not the UI/Player
+	for child in get_children():
+		if child != gameplay_world and child != $CanvasLayer and child is Node2D:
+			# If it's the player, we'll keep them on the root for now or move them when needed
+			# But if it's enemies or the map, move them
+			if child.is_in_group("player"): continue
+			child.reparent(gameplay_world)
+	
+	# Also find any enemies already in the tree and reparent them
+	for enemy in get_tree().get_nodes_in_group("enemy"):
+		if enemy.get_parent() == self:
+			enemy.reparent(gameplay_world)
 
 func _on_level_up():
 	level_ups_pending += 1
@@ -335,6 +360,96 @@ func on_chest_collected():
 func _on_chest_ok_pressed():
 	chest_popup.visible = false
 	get_tree().paused = false
+
+func enter_boss_arena(boss_type: String):
+	Global.console_log("Entering Boss Arena for: " + boss_type)
+	get_tree().paused = true
+	
+	# Show Loading Screen
+	var loading_scene = load("res://Scenes/loading_screen.tscn")
+	var loading_screen = loading_scene.instantiate()
+	loading_screen.z_index = 100
+	$CanvasLayer.add_child(loading_screen)
+	
+	# Fade in Loading Screen
+	loading_screen.modulate.a = 0
+	var tween = create_tween()
+	tween.tween_property(loading_screen, "modulate:a", 1.0, 0.5)
+	await tween.finished
+	
+	await get_tree().create_timer(1.0).timeout # Dramatic pause
+	
+	var arena_scene = load("res://Scenes/boss_arena.tscn")
+	if not arena_scene:
+		Global.console_log("Error: Boss Arena scene not found!")
+		get_tree().paused = false
+		loading_screen.queue_free()
+		return
+		
+	current_arena = arena_scene.instantiate()
+	current_arena.boss_type = boss_type
+	current_arena.process_mode = Node.PROCESS_MODE_ALWAYS
+	add_child(current_arena)
+	move_child(current_arena, 0)
+	
+	# WORLD SWAP: Hide regular world and move player to arena
+	if gameplay_world:
+		gameplay_world.visible = false
+		gameplay_world.process_mode = Node.PROCESS_MODE_DISABLED
+	
+	if player:
+		player.reparent(current_arena)
+		player.global_position = current_arena.get_node("PlayerPos").global_position
+		player.process_mode = Node.PROCESS_MODE_ALWAYS
+		
+	# Fade out Loading Screen
+	tween = create_tween()
+	tween.tween_property(loading_screen, "modulate:a", 0.0, 0.5)
+	await tween.finished
+	loading_screen.queue_free()
+	
+	# The arena script will handle spawning the boss and unpausing itself
+	# Note: We keep the main game paused so enemies don't move
+	# We need to make sure the player and arena have PROCESS_MODE_ALWAYS or similar
+
+func exit_boss_arena():
+	Global.console_log("Exiting Boss Arena")
+	
+	# Show Loading Screen
+	var loading_scene = load("res://Scenes/loading_screen.tscn")
+	var loading_screen = loading_scene.instantiate()
+	loading_screen.z_index = 100
+	$CanvasLayer.add_child(loading_screen)
+	
+	# Fade in Loading Screen
+	loading_screen.modulate.a = 0
+	var tween = create_tween()
+	tween.tween_property(loading_screen, "modulate:a", 1.0, 0.5)
+	await tween.finished
+	
+	await get_tree().create_timer(0.5).timeout
+	
+	if player:
+		# WORLD SWAP: Return player to main world
+		player.reparent(self if not gameplay_world else gameplay_world)
+		player.global_position = Vector2.ZERO # Return to center
+		player.process_mode = Node.PROCESS_MODE_PAUSABLE
+	
+	if current_arena:
+		current_arena.queue_free()
+		current_arena = null
+		
+	if gameplay_world:
+		gameplay_world.visible = true
+		gameplay_world.process_mode = Node.PROCESS_MODE_PAUSABLE
+	
+	get_tree().paused = false
+	
+	# Fade out Loading Screen
+	tween = create_tween()
+	tween.tween_property(loading_screen, "modulate:a", 0.0, 0.5)
+	await tween.finished
+	loading_screen.queue_free()
 
 func _unhandled_input(event):
 	if event.is_action_pressed("ui_cancel"):
@@ -655,9 +770,14 @@ func spawn_enemy_by_type(type: String):
 	var spawn_pos = player.global_position + Vector2(cos(angle), sin(angle)) * radius
 	
 	enemy.global_position = spawn_pos
-	add_child(enemy)
+	if gameplay_world:
+		gameplay_world.add_child(enemy)
+	else:
+		add_child(enemy)
 	
 	if is_boss:
+		enemy.drops_portal = true
+		enemy.portal_boss_type = type
 		add_active_boss(enemy)
 		Global.console_log("BOSS SPAWNED: " + enemy_name)
 	else:

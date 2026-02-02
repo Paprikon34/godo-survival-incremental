@@ -25,6 +25,10 @@ func find_nearest_enemy() -> Node2D:
 	var y_multiplier = 1.5 # Increase to decrease top/bottom range
 	
 	for enemy in enemies:
+		# ONLY target enemies that are visible and active
+		if not enemy.is_visible_in_tree() or enemy.process_mode == Node.PROCESS_MODE_DISABLED:
+			continue
+			
 		var diff = enemy.global_position - global_position
 		# Elliptical distance check: (x^2 + (y*mult)^2)
 		var dist = sqrt(diff.x**2 + (diff.y * y_multiplier)**2)

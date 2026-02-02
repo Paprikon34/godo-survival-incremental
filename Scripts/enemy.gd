@@ -5,6 +5,8 @@ extends CharacterBody2D
 @export var health: float = 10.0
 @export var damage: float = 10.0
 @export var drops_chest: bool = false
+@export var drops_portal: bool = false
+var portal_boss_type: String = ""
 @export var xp_reward: float = 10.0
 @export var gold_reward: int = 1
 @export var attack_interval: float = 0.5
@@ -19,7 +21,7 @@ var is_dead = false
 
 @onready var player = get_tree().get_first_node_in_group("player")
 @onready var hp_bar = get_node_or_null("HealthBar")
-@onready var sprite = $AnimatedSprite2D
+@onready var sprite = get_node_or_null("AnimatedSprite2D") if get_node_or_null("AnimatedSprite2D") else get_node_or_null("Sprite2D")
 @onready var collision_shape = $CollisionShape2D
 
 func _ready():
@@ -37,7 +39,7 @@ func _ready():
 	
 	add_to_group("enemy")
 	
-	if sprite:
+	if sprite and sprite is AnimatedSprite2D:
 		if sprite.sprite_frames.has_animation("move"):
 			sprite.play("move")
 		elif sprite.sprite_frames.has_animation("movment"):
@@ -84,7 +86,9 @@ func take_damage(amount: float):
 		hp_bar.value = health
 	# Global.console_log("Enemy took " + str(amount) + " damage. Remaining HP: " + str(health))
 	if health <= 0:
-		if drops_chest:
+		if drops_portal:
+			call_deferred("_spawn_portal")
+		elif drops_chest:
 			call_deferred("_spawn_chest")
 		die()
 
@@ -93,6 +97,26 @@ func _spawn_chest():
 	chest.process_mode = Node.PROCESS_MODE_PAUSABLE
 	chest.global_position = global_position
 	get_parent().add_child(chest)
+
+func _spawn_portal():
+	# For now we use a placeholder or the chest scene if portal is missing
+	var portal_scene_path = "res://Scenes/portal.tscn"
+	var portal_scene
+	if FileAccess.file_exists(portal_scene_path):
+		portal_scene = load(portal_scene_path)
+	else:
+		# Fallback to a modified chest if portal scene doesn't exist yet
+		portal_scene = preload("res://Scenes/chest.tscn")
+		
+	var portal = portal_scene.instantiate()
+	portal.process_mode = Node.PROCESS_MODE_PAUSABLE
+	portal.global_position = global_position
+	if "boss_type" in portal:
+		portal.boss_type = portal_boss_type
+	
+	# If we use chest as fallback, we might need to change its script or behavior
+	# But for now, let's assume portal.tscn will be created.
+	get_parent().add_child(portal)
 
 func die():
 	if is_dead: return
@@ -127,7 +151,7 @@ func die():
 		player.gain_xp(xp_reward * xp_mult)
 	
 	# Death Animation
-	if sprite and sprite.sprite_frames.has_animation("death"):
+	if sprite and sprite is AnimatedSprite2D and sprite.sprite_frames.has_animation("death"):
 		sprite.play("death")
 		await sprite.animation_finished
 	
