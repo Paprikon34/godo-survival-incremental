@@ -55,22 +55,47 @@ func add_active_boss(boss: Node2D):
 			game.add_active_boss(boss)
 
 func _on_boss_defeated(boss):
-	active_arena_bosses.erase(boss)
+	Global.console_log("Boss Arena: Boss entity defeated.")
+	if active_arena_bosses.has(boss):
+		active_arena_bosses.erase(boss)
 	
-	# Only spawn rewards when ALL bosses/minis in the arena are gone
+	# Cleanup dead refs and filter
+	var valid_bosses = []
+	for b in active_arena_bosses:
+		if is_instance_valid(b):
+			valid_bosses.append(b)
+	active_arena_bosses = valid_bosses
+	
+	Global.console_log("Boss Arena: Remaining boss entities: " + str(active_arena_bosses.size()))
+	
 	if active_arena_bosses.size() == 0:
-		Global.console_log("Boss Arena: All boss entities defeated!")
+		Global.console_log("Boss Arena: All boss entities gone. Spawning rewards...")
 		boss_defeated.emit()
 		spawn_victory_rewards()
 
 func spawn_victory_rewards():
-	var spawn_at = last_boss_pos
+	# Use local position for easier logic relative to the arena
+	var spawn_pos_local = Vector2.ZERO
+	
+	var player = get_tree().get_first_node_in_group("player")
+	if not player:
+		player = get_node_or_null("Player") # Fallback if group fails
+		
+	if player:
+		spawn_pos_local = player.position + Vector2(0, -80) # 80 pixels above player
+		Global.console_log("Spawning rewards above player at local " + str(spawn_pos_local))
+	else:
+		# Fallback to local version of last boss pos
+		spawn_pos_local = last_boss_pos - global_position
+		Global.console_log("Player not found in arena! Spawning at fallback " + str(spawn_pos_local))
 	
 	var chest = load("res://Scenes/chest.tscn").instantiate()
-	chest.global_position = spawn_at
 	add_child(chest)
+	chest.position = spawn_pos_local
 	
-	await get_tree().create_timer(2.0).timeout
+	await get_tree().create_timer(1.5).timeout
+	
 	var exit_portal = load("res://Scenes/exit_portal.tscn").instantiate()
-	exit_portal.global_position = spawn_at + Vector2(60, 0)
 	add_child(exit_portal)
+	exit_portal.position = spawn_pos_local + Vector2(100, 20) # Slightly offset
+	Global.console_log("Exit portal spawned.")
