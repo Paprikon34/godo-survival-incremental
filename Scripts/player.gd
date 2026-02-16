@@ -92,14 +92,15 @@ func gain_xp(amount: float):
 	while experience >= level * 80:
 		_trigger_level_up()
 
-func _trigger_level_up():
-	experience -= level * 80 # Match the requirement
+func _trigger_level_up(is_cheat: bool = false):
+	if not is_cheat:
+		experience -= level * 80 # Match the requirement
 	level += 1
 	emit_signal("level_up")
 	Global.console_log("Level Up! New Level: " + str(level))
 
 func force_level_up():
-	_trigger_level_up()
+	_trigger_level_up(true)
 
 func die():
 	Global.console_log("Player Died!")
