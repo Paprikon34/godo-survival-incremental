@@ -128,100 +128,6 @@ offset_bottom = -20.0
 grow_vertical = 0
 text = "Stats"
 
-[node name="CheatMenu" type="VBoxContainer" parent="CanvasLayer/UI"]
-visible = false
-layout_mode = 1
-anchors_preset = 11
-anchor_left = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -160.0
-offset_top = 100.0
-offset_right = -10.0
-offset_bottom = -100.0
-grow_horizontal = 0
-grow_vertical = 2
-alignment = 1
-
-[node name="SkipTime1" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip  to Boss 1"
-
-[node name="SkipTime2" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip to Boss 2"
-
-[node name="SkipTime3" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip to  Boss 3"
-
-[node name="SkipTime4" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip  to Boss 4"
-
-[node name="SkipTime5" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip to Boss 5"
-
-[node name="SkipTime6" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip to Boss 6"
-
-[node name="SkipTime7" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip to Boss 7"
-
-[node name="SkipTime8" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip to Boss 8"
-
-[node name="SkipTime9" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Skip to Boss 9"
-
-[node name="ResetTimer" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Reset Timer"
-
-[node name="GodModeToggle" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "God Mode: OFF"
-
-[node name="SuperDamageToggle" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Super Damage: OFF"
-
-[node name="ForceSpawn" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Force Spawn Enemy"
-
-[node name="ForceBossBtn" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "Force Boss"
-
-[node name="LevelUp1Btn" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "+1 Level"
-
-[node name="LevelUp10Btn" type="Button" parent="CanvasLayer/UI/CheatMenu"]
-layout_mode = 2
-theme_override_font_sizes/font_size = 12
-text = "+10 Levels"
 
 [node name="DetailedUpgradeList" type="VBoxContainer" parent="CanvasLayer/UI"]
 visible = false
@@ -452,21 +358,119 @@ offset_bottom = 240.0
 grow_horizontal = 0
 theme_override_constants/separation = 5
 
+[node name="CheatLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="CheatMenu" type="VBoxContainer" parent="CheatLayer"]
+visible = false
+layout_mode = 1
+anchors_preset = 11
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -160.0
+offset_top = 100.0
+offset_right = -10.0
+offset_bottom = -100.0
+grow_horizontal = 0
+grow_vertical = 2
+alignment = 1
+
+[node name="SkipTime1" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip  to Boss 1"
+
+[node name="SkipTime2" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip to Boss 2"
+
+[node name="SkipTime3" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip to  Boss 3"
+
+[node name="SkipTime4" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip  to Boss 4"
+
+[node name="SkipTime5" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip to Boss 5"
+
+[node name="SkipTime6" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip to Boss 6"
+
+[node name="SkipTime7" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip to Boss 7"
+
+[node name="SkipTime8" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip to Boss 8"
+
+[node name="SkipTime9" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Skip to Boss 9"
+
+[node name="ResetTimer" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Reset Timer"
+
+[node name="GodModeToggle" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "God Mode: OFF"
+
+[node name="SuperDamageToggle" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Super Damage: OFF"
+
+[node name="ForceSpawn" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Force Spawn Enemy"
+
+[node name="ForceBossBtn" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "Force Boss"
+
+[node name="LevelUp1Btn" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "+1 Level"
+
+[node name="LevelUp10Btn" type="Button" parent="CheatLayer/CheatMenu"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 12
+text = "+10 Levels"
+
 [connection signal="pressed" from="CanvasLayer/UI/PauseMenu/VBoxContainer/ResumeButton" to="." method="_on_resume_pressed"]
 [connection signal="pressed" from="CanvasLayer/UI/PauseMenu/VBoxContainer/QuitButton" to="." method="_on_quit_pressed"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime1" to="." method="_on_skip_time_1"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime2" to="." method="_on_skip_time_2"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime3" to="." method="_on_skip_time_3"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime4" to="." method="_on_skip_time_4"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime5" to="." method="_on_skip_time_5"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime6" to="." method="_on_skip_time_6"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime7" to="." method="_on_skip_time_7"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime8" to="." method="_on_skip_time_8"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SkipTime9" to="." method="_on_skip_time_9"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/ResetTimer" to="." method="_on_reset_timer"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/GodModeToggle" to="." method="_on_god_mode_toggle"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/SuperDamageToggle" to="." method="_on_super_damage_toggle"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/ForceSpawn" to="." method="_on_force_spawn"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/ForceBossBtn" to="." method="_on_force_boss_spawn"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/LevelUp1Btn" to="." method="_on_lvl_up_1"]
-[connection signal="pressed" from="CanvasLayer/UI/CheatMenu/LevelUp10Btn" to="." method="_on_lvl_up_10"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime1" to="." method="_on_skip_time_1"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime2" to="." method="_on_skip_time_2"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime3" to="." method="_on_skip_time_3"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime4" to="." method="_on_skip_time_4"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime5" to="." method="_on_skip_time_5"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime6" to="." method="_on_skip_time_6"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime7" to="." method="_on_skip_time_7"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime8" to="." method="_on_skip_time_8"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SkipTime9" to="." method="_on_skip_time_9"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/ResetTimer" to="." method="_on_reset_timer"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/GodModeToggle" to="." method="_on_god_mode_toggle"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/SuperDamageToggle" to="." method="_on_super_damage_toggle"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/ForceSpawn" to="." method="_on_force_spawn"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/ForceBossBtn" to="." method="_on_force_boss_spawn"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/LevelUp1Btn" to="." method="_on_lvl_up_1"]
+[connection signal="pressed" from="CheatLayer/CheatMenu/LevelUp10Btn" to="." method="_on_lvl_up_10"]

@@ -1,0 +1,26 @@
+[gd_scene format=3 uid="uid://6kt0l6ic3fnw"]
+
+[ext_resource type="Script" uid="uid://bllgwi7korq02" path="res://Scripts/sword_swing.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cp0yq3j1gv783" path="res://Sprites/wepons/sword.png" id="2_texture"]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_1"]
+radius = 17.0
+height = 45.0
+
+[node name="SwordSwing" type="Area2D" unique_id=1322665766 groups=["projectile"]]
+position = Vector2(15, 0)
+scale = Vector2(1.2743826, 1.2743826)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=323306117]
+texture_filter = 1
+position = Vector2(0, -20)
+scale = Vector2(1.2473948, 1.2473948)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=865077206]
+position = Vector2(2, -20)
+scale = Vector2(1, 1.0892729)
+shape = SubResource("CapsuleShape2D_1")

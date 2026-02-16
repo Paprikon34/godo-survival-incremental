@@ -78,11 +78,11 @@ var damage_history = [] # Rolling window of [timestamp, amount]
 @onready var debug_log_label = $CanvasLayer/UI/DebugConsole/ScrollContainer/LogLabel
 @onready var boss_bar_container = $CanvasLayer/UI/BossBarContainer
 @onready var enemy_count_label = $CanvasLayer/UI/DebugConsole/EnemyCountLabel
-@onready var cheat_menu = $CanvasLayer/UI/CheatMenu
-@onready var god_button = $CanvasLayer/UI/CheatMenu/GodModeToggle
-@onready var dmg_button = $CanvasLayer/UI/CheatMenu/SuperDamageToggle
-@onready var reset_button = $CanvasLayer/UI/CheatMenu/ResetTimer
-@onready var force_boss_button = $CanvasLayer/UI/CheatMenu/ForceBossBtn
+@onready var cheat_menu = $CheatLayer/CheatMenu
+@onready var god_button = $CheatLayer/CheatMenu/GodModeToggle
+@onready var dmg_button = $CheatLayer/CheatMenu/SuperDamageToggle
+@onready var reset_button = $CheatLayer/CheatMenu/ResetTimer
+@onready var force_boss_button = $CheatLayer/CheatMenu/ForceBossBtn
 
 func _ready():
 	screen_size = get_viewport_rect().size
