@@ -99,7 +99,14 @@ Spawns after 5 minutes.
 
 ### 💀 Bosses
 Large red enemies that act as **Portal Guardians**.
-- **Boss 1 (1:30)**: 400 HP, 80 Speed.
+- **Boss 1 (1:30)**: 1000 HP, 120 Speed. (Enhanced AI)
+	- **Behavior**: Uses a weighted decision system every 3 seconds to choose an attack.
+	- **Attacks**:
+		- **Barrage (30%)**: Fires a rapid stream of bullets at the player.
+		- **Circular Blast (30%)**: Fires a ring of 12 projectiles.
+		- **Spiral (20%)**: Fires a rotating double-helix pattern of bullets.
+		- **Dash (15%)**: Dashes rapidly towards the player (Orange tint).
+		- **Summon (5%)**: Spawns 4 minions in a wide circle (Green tint).
 - **Boss 2 (3:00)**: 700 HP, 90 Speed.
 - **Elite Boss (4:00)**: 1100 HP, 100 Speed.
 - **Void Splitter (5:00)**: 1500 HP, 70 Speed.
@@ -161,3 +168,7 @@ Accessible only if "Cheats" are enabled in the global settings. Features a verti
 - **Time Manipulation**: Skip directly to Boss 1 (1:29), Boss 2 (2:59), Elite Boss (3:59), Void Splitter (4:59), or **Reset Timer** to 0:00.
 - **Invincibility (God Mode)**: Toggle ignoring all incoming damage (Press again to disable).
 - **Infinite Damage**: Toggle setting Damage Multiplier to 1000x (Press again to reset to 1x).
+- **Force Spawn Enemy**: Spawns a random enemy from the current wave.
+- **Force Boss**: Instantly spawns the Enhanced Boss 1 near the player.
+- **+1 Level**: Instantly levels up the player once.
+- **+10 Levels**: Instantly levels up the player ten times.
