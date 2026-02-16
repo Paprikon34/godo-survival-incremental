@@ -50,9 +50,12 @@ func add_active_boss(boss: Node2D):
 		boss.tree_exited.connect(_on_boss_defeated.bind(boss))
 		
 		# Also register with main game for UI/health bars
-		var game = get_tree().get_first_node_in_group("game")
-		if game and game.has_method("add_active_boss"):
-			game.add_active_boss(boss)
+		if is_inside_tree():
+			var tree = get_tree()
+			if tree:
+				var game = tree.get_first_node_in_group("game")
+				if game and game.has_method("add_active_boss"):
+					game.add_active_boss(boss)
 
 func _on_boss_defeated(boss):
 	Global.console_log("Boss Arena: Boss entity defeated.")
@@ -74,10 +77,17 @@ func _on_boss_defeated(boss):
 		spawn_victory_rewards()
 
 func spawn_victory_rewards():
+	if not is_inside_tree():
+		return
+		
+	var tree = get_tree()
+	if not tree:
+		return
+
 	# Use local position for easier logic relative to the arena
 	var spawn_pos_local = Vector2.ZERO
 	
-	var player = get_tree().get_first_node_in_group("player")
+	var player = tree.get_first_node_in_group("player")
 	if not player:
 		player = get_node_or_null("Player") # Fallback if group fails
 		
@@ -93,7 +103,10 @@ func spawn_victory_rewards():
 	add_child(chest)
 	chest.position = spawn_pos_local
 	
+	# Safety check for timer
+	if not is_inside_tree(): return
 	await get_tree().create_timer(1.5).timeout
+	if not is_inside_tree(): return
 	
 	var exit_portal = load("res://Scenes/exit_portal.tscn").instantiate()
 	add_child(exit_portal)

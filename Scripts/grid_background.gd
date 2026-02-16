@@ -5,7 +5,7 @@ extends Node2D
 
 @onready var camera = get_viewport().get_camera_2d()
 
-func _process(delta):
+func _process(_delta):
 	queue_redraw()
 
 func _draw():

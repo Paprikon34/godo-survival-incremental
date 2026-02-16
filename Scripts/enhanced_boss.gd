@@ -13,10 +13,26 @@ var is_active = false
 @onready var sprite = $Sprite2D
 @onready var hp_bar = $HealthBar
 
-enum State { IDLE, CHASING, DASHING, SHOOTING, SPECIAL }
+# Preload scenes locally to be safe
+const PROJECTILE_SCENE_PATH = "res://Scenes/projectile.tscn"
+const MINION_SCENE_PATH = "res://Scenes/enemy.tscn"
+
+enum State { IDLE, CHASING, DASHING, SHOOTING, BARRAGE, SPIRAL, SUMMONING }
 var current_state = State.IDLE
 
 var state_timer = 0.0
+var attack_cooldown_timer = 0.0
+var shoot_timer = 0.0
+var angle_accumulator = 0.0
+
+# Attack Weights (Higher number = more frequent)
+var ATTACK_WEIGHTS = {
+	State.SHOOTING: 30,
+	State.BARRAGE: 30,
+	State.SPIRAL: 20,
+	State.DASHING: 15,
+	State.SUMMONING: 5
+}
 
 func _ready():
 	if stats:
@@ -24,30 +40,32 @@ func _ready():
 		max_health = stats.health
 	
 	add_to_group("enemy")
-	hp_bar.max_value = max_health
-	hp_bar.value = health
+	if hp_bar:
+		hp_bar.max_value = max_health
+		hp_bar.value = health
 	
-	# Force collision bits for Arena Boss
 	collision_layer = 2 # Enemy layer
 	collision_mask = 1  # Hit player
 	
-	# Register with game UI if possible
+	# Register with game UI
 	var game = get_tree().get_first_node_in_group("game")
 	if game and game.has_method("add_active_boss"):
 		game.add_active_boss(self)
 
 func start_boss_fight():
-	# Intro animation: land from above
+	# Intro animation
 	var target_pos = global_position
 	var start_pos = global_position + Vector2(0, -500)
 	global_position = start_pos
 	
-	sprite.modulate.a = 0
-	var tween = create_tween()
-	tween.tween_property(sprite, "modulate:a", 1.0, 0.5)
-	tween.parallel().tween_property(self, "global_position", target_pos, 0.8).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
-	
-	await tween.finished
+	if sprite:
+		sprite.modulate.a = 0
+		var tween = create_tween()
+		tween.tween_property(sprite, "modulate:a", 1.0, 0.5)
+		tween.parallel().tween_property(self, "global_position", target_pos, 0.8).set_trans(Tween.TRANS_BOUNCE).set_ease(Tween.EASE_OUT)
+		
+		await tween.finished
+		
 	screenshake(0.5, 10.0)
 	is_active = true
 	set_state(State.CHASING)
@@ -64,110 +82,220 @@ func screenshake(duration: float, intensity: float):
 func set_state(new_state):
 	current_state = new_state
 	state_timer = 0.0
+	shoot_timer = 0.0
+	angle_accumulator = 0.0
 	
-	match current_state:
-		State.DASHING:
-			state_timer = 1.0 # Dash duration
-			# Dash towards player
-			if player:
-				var dir = (player.global_position - global_position).normalized()
-				velocity = dir * speed * 4.0
-		State.SHOOTING:
-			state_timer = 2.0
-		State.SPECIAL:
-			state_timer = 3.0
+	Global.console_log("BOSS STATE -> " + State.keys()[current_state])
+	
+	if sprite:
+		match current_state:
+			State.CHASING:
+				sprite.modulate = Color(1, 1, 1)
+				attack_cooldown_timer = 0.0 # Reset cooldown counting
+				
+			State.DASHING:
+				sprite.modulate = Color(1, 0.5, 0) # Orange
+				if is_instance_valid(player):
+					var dir = (player.global_position - global_position).normalized()
+					velocity = dir * speed * 4.0 # Dash fast
+					
+			State.SHOOTING: # Circular Blast
+				sprite.modulate = Color(1, 0.2, 0.2) # Red
+				shoot_circular()
+				
+			State.BARRAGE: # Machine Gun
+				sprite.modulate = Color(0.2, 0.2, 1) # Blue
+				
+			State.SPIRAL: # Rotating pattern
+				sprite.modulate = Color(0.8, 0.2, 0.8) # Purple
+				
+			State.SUMMONING:
+				sprite.modulate = Color(0.2, 1, 0.2) # Green
+				spawn_minions()
 
 func _physics_process(delta):
-	if not is_active or is_dead: return
+	if is_dead: return
 	
+	# Initial Activation Failsafe
+	if not is_active and is_inside_tree():
+		state_timer += delta
+		if state_timer > 2.0:
+			Global.console_log("Boss Force Start (Failsafe)")
+			is_active = true
+			set_state(State.CHASING)
+	
+	if not is_active: return
+	
+	# Update timers
 	state_timer += delta
+	shoot_timer += delta
 	
+	# Ensure player exists
+	if not is_instance_valid(player):
+		player = get_tree().get_first_node_in_group("player")
+		
+	# --- STATE MACHINE ---
 	match current_state:
 		State.CHASING:
-			if player:
+			# Movement Logic
+			if is_instance_valid(player):
 				var dir = (player.global_position - global_position).normalized()
 				velocity = dir * speed
 				move_and_slide()
-				
-				if state_timer > 3.0:
-					set_state(State.DASHING if randf() < 0.5 else State.SHOOTING)
-					
+			else:
+				velocity = velocity.lerp(Vector2.ZERO, delta * 5.0)
+				move_and_slide()
+			
+			# Attack Selector Logic
+			attack_cooldown_timer += delta
+			if attack_cooldown_timer >= 3.0: # Explicit 3 second interval
+				choose_attack()
+
 		State.DASHING:
-			move_and_slide()
-			# Visual effect
-			sprite.modulate = Color(1, 1, 0) # Flash yellow
-			if state_timer > 1.0:
-				sprite.modulate = Color(1, 1, 1)
+			move_and_slide() # Continue moving in initial direction
+			if state_timer > 0.8: # Short dash
 				set_state(State.CHASING)
 				
 		State.SHOOTING:
-			velocity = Vector2.ZERO
-			if int(state_timer * 10) % 5 == 0:
-				shoot_circular()
-			if state_timer > 1.5:
+			velocity = velocity.lerp(Vector2.ZERO, delta * 5.0)
+			move_and_slide()
+			# One-shot attack handled in set_state, verify end
+			if state_timer > 1.0:
+				set_state(State.CHASING)
+
+		State.BARRAGE:
+			velocity = velocity.lerp(Vector2.ZERO, delta * 5.0)
+			move_and_slide()
+			
+			if shoot_timer > 0.1: # 10 shots/sec
+				shoot_timer = 0.0
+				if is_instance_valid(player):
+					var dir = (player.global_position - global_position).normalized()
+					dir = dir.rotated(randf_range(-0.15, 0.15)) # Slight spread
+					spawn_projectile(dir)
+					
+			if state_timer > 2.0: # 2 seconds of shooting
 				set_state(State.CHASING)
 				
-	# 1. Physical Collision Damage
+		State.SPIRAL:
+			velocity = velocity.lerp(Vector2.ZERO, delta * 5.0)
+			move_and_slide()
+			
+			angle_accumulator += delta * 6.0 # Rotation speed
+			if shoot_timer > 0.05: # Very fast fire rate
+				shoot_timer = 0.0
+				var dir1 = Vector2(cos(angle_accumulator), sin(angle_accumulator))
+				var dir2 = Vector2(cos(angle_accumulator + PI), sin(angle_accumulator + PI))
+				spawn_projectile(dir1)
+				spawn_projectile(dir2)
+				
+			if state_timer > 3.0:
+				set_state(State.CHASING)
+				
+		State.SUMMONING:
+			velocity = velocity.lerp(Vector2.ZERO, delta * 5.0)
+			move_and_slide()
+			if state_timer > 1.0:
+				set_state(State.CHASING)
+
+	# Collision Damage
+	_handle_collision_damage(delta)
+
+func choose_attack():
+	Global.console_log("Boss choosing attack...")
+	var total_weight = 0
+	for w in ATTACK_WEIGHTS.values():
+		total_weight += w
+		
+	var roll = randi_range(0, total_weight)
+	var current_weight = 0
+	
+	for state in ATTACK_WEIGHTS.keys():
+		current_weight += ATTACK_WEIGHTS[state]
+		if roll <= current_weight:
+			set_state(state)
+			return
+
+func _handle_collision_damage(delta):
+	# Physical Collision
 	for i in get_slide_collision_count():
 		var collision = get_slide_collision(i)
 		var collider = collision.get_collider()
 		if collider.has_method("take_damage") and collider.is_in_group("player"):
-			collider.take_damage(damage * delta * 5.0) # Continuous damage
+			collider.take_damage(damage * delta * 5.0)
 			
-	# 2. Distance-based damage (Safety net)
-	if player and global_position.distance_to(player.global_position) < 80.0:
+	# Distance Safety Net
+	if is_instance_valid(player) and global_position.distance_to(player.global_position) < 80.0:
 		if player.has_method("take_damage"):
 			player.take_damage(damage * delta * 5.0)
 
+# --- ACTIONS ---
+
 func shoot_circular():
-	var num_bullets = 8
+	Global.console_log("Boss performing Circular Blast")
+	var num_bullets = 12
 	for i in range(num_bullets):
 		var angle = (PI * 2 / num_bullets) * i
 		var dir = Vector2(cos(angle), sin(angle))
 		spawn_projectile(dir)
 
-func spawn_projectile(direction: Vector2):
-	var projectile = Area2D.new()
-	var b_sprite = Sprite2D.new()
-	b_sprite.texture = load("res://icon.svg")
-	b_sprite.scale = Vector2(0.25, 0.25)
-	b_sprite.modulate = Color(1.0, 0.2, 0.2)
-	projectile.add_child(b_sprite)
+func spawn_projectile(dir: Vector2):
+	var p_scene = load(PROJECTILE_SCENE_PATH)
+	if not p_scene: return
 	
-	var collision = CollisionShape2D.new()
-	var shape = CircleShape2D.new()
-	shape.radius = 12
-	collision.shape = shape
-	projectile.add_child(collision)
+	var p = p_scene.instantiate()
+	p.direction = dir
+	p.speed = 450.0
+	p.damage = damage
+	p.target_group = "player"
 	
-	projectile.set_script(preload("res://Scripts/projectile.gd"))
+	# Safe local positioning
+	p.position = position 
+	p.z_index = 4096 
 	
-	projectile.global_position = global_position
-	projectile.set("direction", direction)
-	projectile.set("speed", 400.0)
-	projectile.set("damage", damage)
-	projectile.set("target_group", "player")
+	var parent = get_parent()
+	if parent:
+		parent.call_deferred("add_child", p)
+		p.set_deferred("position", position)
+
+func spawn_minions():
+	Global.console_log("Boss summoning minions (Wide Spread)")
+	var num_minions = 4
+	var minion_s = load(MINION_SCENE_PATH)
+	if not minion_s: return
 	
-	projectile.collision_mask = 1
-	projectile.collision_layer = 0
-	
-	get_parent().add_child(projectile)
+	for i in range(num_minions):
+		var angle = (PI * 2 / num_minions) * i
+		# Spawn further away (220px) to prevent sticking
+		var offset = Vector2(cos(angle), sin(angle)) * 220.0 
+		var spawn_pos = position + offset # Use local position relative to arena
+		
+		var enemy = minion_s.instantiate()
+		enemy.z_index = z_index + 1
+		
+		# Nerf minions slightly
+		if "hp_mult" in enemy: enemy.hp_mult = 0.5
+		if "speed_mult" in enemy: enemy.speed_mult = 0.8
+		
+		get_parent().call_deferred("add_child", enemy)
+		# Use position, not global_position, for arena compatibility
+		enemy.set_deferred("position", spawn_pos) 
 
 func take_damage(amount: float):
 	if is_dead: return
 	health -= amount
 	if hp_bar: hp_bar.value = health
 	
-	Global.console_log("Boss took damage: %.1f. HP: %.1f/%.1f" % [amount, health, max_health])
-		
+	# Global.console_log("Boss HP: %.0f" % health)
 	if health <= 0:
 		die()
 
 func die():
 	is_dead = true
-	# Cool death effect
-	var tween = create_tween()
-	tween.tween_property(sprite, "scale", Vector2.ZERO, 1.0)
-	tween.parallel().tween_property(sprite, "rotation", PI * 4, 1.0)
-	await tween.finished
+	if sprite:
+		# Cool death effect
+		var tween = create_tween()
+		tween.tween_property(sprite, "scale", Vector2.ZERO, 1.0)
+		tween.parallel().tween_property(sprite, "rotation", PI * 4, 1.0)
+		await tween.finished
 	queue_free()

@@ -82,6 +82,7 @@ var damage_history = [] # Rolling window of [timestamp, amount]
 @onready var god_button = $CanvasLayer/UI/CheatMenu/GodModeToggle
 @onready var dmg_button = $CanvasLayer/UI/CheatMenu/SuperDamageToggle
 @onready var reset_button = $CanvasLayer/UI/CheatMenu/ResetTimer
+@onready var force_boss_button = $CanvasLayer/UI/CheatMenu/ForceBossBtn
 
 func _ready():
 	screen_size = get_viewport_rect().size
@@ -126,19 +127,7 @@ func _ready():
 	# Cheat Menu Init
 	cheat_menu.visible = Global.cheats_enabled
 	if Global.cheats_enabled:
-		$CanvasLayer/UI/CheatMenu/SkipTime1.pressed.connect(_on_skip_time_1)
-		$CanvasLayer/UI/CheatMenu/SkipTime2.pressed.connect(_on_skip_time_2)
-		$CanvasLayer/UI/CheatMenu/SkipTime3.pressed.connect(_on_skip_time_3)
-		$CanvasLayer/UI/CheatMenu/SkipTime4.pressed.connect(_on_skip_time_4)
-		$CanvasLayer/UI/CheatMenu/SkipTime5.pressed.connect(_on_skip_time_5)
-		$CanvasLayer/UI/CheatMenu/SkipTime6.pressed.connect(_on_skip_time_6)
-		$CanvasLayer/UI/CheatMenu/SkipTime7.pressed.connect(_on_skip_time_7)
-		$CanvasLayer/UI/CheatMenu/SkipTime8.pressed.connect(_on_skip_time_8)
-		$CanvasLayer/UI/CheatMenu/SkipTime9.pressed.connect(_on_skip_time_9)
-		god_button.pressed.connect(_on_god_mode_toggle)
-		dmg_button.pressed.connect(_on_super_damage_toggle)
-		$CanvasLayer/UI/CheatMenu/ResetTimer.pressed.connect(_on_reset_timer)
-		$CanvasLayer/UI/CheatMenu/ForceSpawn.pressed.connect(_on_force_spawn)
+		# Manual connections removed as they are now in the scene file
 		Global.console_log("CHEATS ENABLED!")
 		
 	level_up_menu.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -186,7 +175,7 @@ func _on_level_up():
 	_show_level_up_menu()
 
 func _show_level_up_menu():
-	get_tree().paused = true
+	# get_tree().paused = true # Removed pause
 	
 	# Increase enemy base difficulty
 	level_up_hp_bonus += 0.5
@@ -213,6 +202,7 @@ func _show_level_up_menu():
 	current_upgrades = options
 	
 	level_up_menu.visible = true
+	get_tree().paused = true
 	set_ui_state_paused(true)
 	
 	for i in range(option_buttons.size()):
@@ -580,15 +570,12 @@ func _process(delta):
 		child.queue_free()
 		
 	if active_bosses.size() > 0:
-		# Filter bosses: if in arena, only show arena bosses. If not, only show main world bosses.
 		var bosses_to_show = []
 		for boss in active_bosses:
 			if current_arena:
-				# Check if boss is inside the arena
 				if current_arena.is_ancestor_of(boss):
 					bosses_to_show.append(boss)
 			else:
-				# Show only main world bosses
 				if not boss.is_inside_tree(): continue
 				var boss_parent = boss.get_parent()
 				if boss_parent == gameplay_world or boss_parent == self:
@@ -628,7 +615,6 @@ func _process(delta):
 	else:
 		boss_bar_container.visible = false
 
-	# If paused OR in arena, don't run regular game world logic (spawning, timers)
 	if get_tree().paused or current_arena != null:
 		return
 		
@@ -774,7 +760,9 @@ func update_pointers(_delta: float):
 			# Choose texture
 			if target.is_in_group("portal"):
 				sprite.texture = load("res://Sprites/portal/portal_idle_circular-removebg-preview.png")
-				sprite.modulate = Color(0, 1, 1) # Cyan for portal
+				sprite.modulate = Color(0.6, 0.1, 1.0) # Purple for portal
+				sprite.region_enabled = true
+				sprite.region_rect = Rect2(0, 0, 125, 125)
 			else:
 				sprite.texture = load("res://Sprites/Animated Chests/Chests.png")
 				# If it's a sprite sheet, we might need to set the region
@@ -787,7 +775,7 @@ func update_pointers(_delta: float):
 			# Add arrow
 			var arrow = Polygon2D.new()
 			arrow.polygon = PackedVector2Array([Vector2(0, -15), Vector2(10, 5), Vector2(-10, 5)])
-			arrow.position = Vector2(0, -35)
+			arrow.position = Vector2(0, -60) # Move outside the bubble
 			arrow.color = Color.WHITE
 			pointer.add_child(arrow)
 			
@@ -798,8 +786,11 @@ func update_pointers(_delta: float):
 		var center = viewport_rect.size / 2.0
 		var direction = (screen_pos - center).normalized()
 		
-		# Clamp to screen edges
-		var target_pos = center + direction * 1000.0 # Far out
+		# Rotate to point at target (Arrow points UP at -90 deg, so add 90 deg / PI/2)
+		var angle = direction.angle() + PI / 2
+		pointer.rotation = angle
+		
+	# Clamp to screen edges
 		
 		# Intersect with screen rect
 		var pointer_pos = Vector2.ZERO
@@ -996,3 +987,44 @@ func _on_force_spawn():
 
 func _on_damage_dealt(amount: float):
 	damage_history.append([Time.get_ticks_msec() / 1000.0, amount])
+
+func _on_force_boss_spawn():
+	Global.console_log("CHEAT: Force Spawning Enhanced Boss 1!")
+	var boss_s = load("res://Scenes/enhanced_boss_1.tscn")
+	if not boss_s:
+		Global.console_log("ERROR: Could not load enhanced_boss_1.tscn")
+		return
+		
+	var boss = boss_s.instantiate()
+	
+	# Spawn near player
+	if player:
+		var offset = Vector2(250, 0)
+		boss.global_position = player.global_position + offset
+	else:
+		boss.global_position = Vector2(400, 300)
+		
+	if gameplay_world:
+		gameplay_world.add_child(boss)
+	else:
+		add_child(boss)
+		
+	if boss.has_method("start_boss_fight"):
+		boss.start_boss_fight()
+	else:
+		boss.is_active = true
+		
+	add_active_boss(boss)
+
+func _on_lvl_up_1():
+	if player:
+		Global.console_log("CHEAT: +1 Level")
+		if player.has_method("force_level_up"):
+			player.force_level_up()
+
+func _on_lvl_up_10():
+	if player:
+		Global.console_log("CHEAT: +10 Levels")
+		if player.has_method("force_level_up"):
+			for i in range(10):
+				player.force_level_up()

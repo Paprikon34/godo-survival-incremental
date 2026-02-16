@@ -39,6 +39,6 @@ func find_nearest_enemy() -> Node2D:
 			
 	return nearest
 
-func fire(target: Node2D):
+func fire(_target: Node2D):
 	# Override in subclass
 	pass

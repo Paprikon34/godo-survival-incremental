@@ -98,6 +98,9 @@ func _trigger_level_up():
 	emit_signal("level_up")
 	Global.console_log("Level Up! New Level: " + str(level))
 
+func force_level_up():
+	_trigger_level_up()
+
 func die():
 	Global.console_log("Player Died!")
 	# Reload scene or show game over

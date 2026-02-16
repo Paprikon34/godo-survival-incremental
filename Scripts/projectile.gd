@@ -9,8 +9,14 @@ var target_group: String = "enemy"
 
 func _ready():
 	body_entered.connect(_on_body_entered)
+	z_index = 100
+	# Force high visibility
+	var s = get_node_or_null("Sprite2D")
+	if s:
+		s.modulate = Color(3, 0, 3) # Glowing Magenta
 
 func _physics_process(delta):
+	# Move using local position (safer inside the arena)
 	position += direction * speed * delta
 	
 	lifetime -= delta
@@ -20,15 +26,5 @@ func _physics_process(delta):
 func _on_body_entered(body):
 	if body.is_in_group(target_group):
 		if body.has_method("take_damage"):
-			Global.console_log("Projectile hit %s for %.1f damage" % [body.name, damage])
 			body.take_damage(damage)
-		else:
-			Global.console_log("Projectile hit %s but it has no take_damage method!" % body.name)
-			
-		pierce_count -= 1
-		if pierce_count < 0:
-			queue_free()
-	else:
-		# Log what we hit that wasn't our target, just for debugging
-		if not body.is_in_group("projectile"):
-			Global.console_log("Projectile hit %s (Group: %s) but looking for %s" % [body.name, str(body.get_groups()), target_group])
+		queue_free()

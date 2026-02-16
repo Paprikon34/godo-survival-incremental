@@ -18,6 +18,7 @@ const SAVE_PATH = "user://savegame.save"
 
 var dps_enabled: bool = true
 signal console_log_emitted(text: String)
+@warning_ignore("unused_signal")
 signal damage_dealt(amount: float)
 
 func console_log(text: String):
