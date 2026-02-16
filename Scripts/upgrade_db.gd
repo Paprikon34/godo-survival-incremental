@@ -84,6 +84,27 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "regeneration",
 		"weight": 5
+	},
+	{
+		"name": "Dagger",
+		"description": "Unlock/Upgrade Dagger (Fires forward)",
+		"type": "weapon_unlock",
+		"id": "dagger",
+		"weight": 5
+	},
+	{
+		"name": "Scythe",
+		"description": "Unlock/Upgrade Scythe (Orbiting)",
+		"type": "weapon_unlock",
+		"id": "scythe",
+		"weight": 4
+	},
+	{
+		"name": "Sword",
+		"description": "Unlock/Upgrade Sword (High damage swing)",
+		"type": "weapon_unlock",
+		"id": "sword",
+		"weight": 4
 	}
 ]
 
@@ -171,3 +192,35 @@ static func apply_upgrade(player: Node, upgrade_id: String):
 		"regeneration":
 			if "regeneration" in player:
 				player.regeneration += 0.1
+		"dagger":
+			var dagger = player.get_node_or_null("Dagger")
+			if not dagger:
+				# Add Dagger
+				dagger = Node2D.new()
+				dagger.name = "Dagger"
+				dagger.set_script(load("res://Scripts/dagger.gd"))
+				player.add_child(dagger)
+			else:
+				# Upgrade Dagger
+				if "cooldown" in dagger:
+					dagger.cooldown *= 0.9
+		"scythe":
+			var scythe = player.get_node_or_null("Scythe")
+			if not scythe:
+				scythe = Node2D.new()
+				scythe.name = "Scythe"
+				scythe.set_script(load("res://Scripts/scythe_weapon.gd"))
+				player.add_child(scythe)
+			else:
+				if scythe.has_method("upgrade"):
+					scythe.upgrade()
+		"sword":
+			var sword = player.get_node_or_null("Sword")
+			if not sword:
+				sword = Node2D.new()
+				sword.name = "Sword"
+				sword.set_script(load("res://Scripts/sword_weapon.gd"))
+				player.add_child(sword)
+			else:
+				if sword.has_method("upgrade"):
+					sword.upgrade()

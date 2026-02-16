@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://cbgglowcy3yyo"]
+
+[ext_resource type="Script" uid="uid://cby833kk8x88s" path="res://Scripts/scythe_projectile.gd" id="1_script"]
+[ext_resource type="Texture2D" uid="uid://cq246p6p0mgd1" path="res://Sprites/wepons/scyte.png" id="2_texture"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_1"]
+radius = 35.0
+
+[node name="ScytheProjectile" type="Area2D" unique_id=1999441023 groups=["projectile"]]
+scale = Vector2(1.8000007, 1.8000007)
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_script")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=1807815182]
+texture_filter = 1
+scale = Vector2(2.5, 2.5)
+texture = ExtResource("2_texture")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=182921383]
+shape = SubResource("CircleShape2D_1")

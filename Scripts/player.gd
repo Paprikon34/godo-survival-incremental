@@ -15,6 +15,7 @@ signal level_up
 @export var defense: float = 0.0
 
 var regen_timer: float = 0.0
+var last_facing_direction: Vector2 = Vector2.RIGHT
 
 @onready var hp_bar = get_node_or_null("HealthBar")
 
@@ -63,6 +64,9 @@ func _physics_process(delta):
 			update_hp_bar()
 
 	var direction = Input.get_vector("left", "right", "up", "down")
+	if direction != Vector2.ZERO:
+		last_facing_direction = direction.normalized()
+		
 	velocity = direction * speed
 	move_and_slide()
 

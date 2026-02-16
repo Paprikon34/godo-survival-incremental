@@ -31,6 +31,24 @@ Fires purple projectiles directly towards your mouse cursor.
 - **Base Cooldown**: 1.0s
 - **Scaling**: Each level reduces Cooldown by **-10%** (multiplicative).
 
+### 🗡️ Dagger (Unlockable)
+Fires a dagger in the direction the player is currently facing.
+- **Base Damage**: 20
+- **Base Cooldown**: 0.8s
+- **Scaling**: Each level reduces Cooldown by **-10%** (multiplicative).
+
+### 🪓 Scythe (Unlockable)
+Orbiting weapon that rotates around the player, dealing damage to any enemy it touches.
+- **Base Damage**: 20
+- **Orbit Radius**: 250px
+- **Scaling**: Each level adds **+1 Scythe** to the orbit.
+
+### ⚔️ Sword (Unlockable)
+Swings in a wide arc in the direction the player is facing. High damage but short range.
+- **Base Damage**: 25
+- **Swing Arc**: 200 degrees
+- **Scaling**: Each level increases damage and reduces cooldown.
+
 ---
 
 ## 💎 Upgrades
