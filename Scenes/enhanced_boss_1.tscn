@@ -1,7 +1,279 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=129 format=3]
 
 [ext_resource type="Script" path="res://Scripts/enhanced_boss.gd" id="1_script"]
-[ext_resource type="Texture2D" path="res://icon.svg" id="2_icon"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_1.png" id="2_cleave_1"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_2.png" id="3_cleave_2"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_3.png" id="4_cleave_3"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_4.png" id="5_cleave_4"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_5.png" id="6_cleave_5"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_6.png" id="7_cleave_6"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_7.png" id="8_cleave_7"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_8.png" id="9_cleave_8"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_9.png" id="10_cleave_9"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_10.png" id="11_cleave_10"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_11.png" id="12_cleave_11"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_12.png" id="13_cleave_12"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_13.png" id="14_cleave_13"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_14.png" id="15_cleave_14"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/03_demon_cleave/demon_cleave_15.png" id="16_cleave_15"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_1.png" id="17_death_1"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_2.png" id="18_death_2"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_3.png" id="19_death_3"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_4.png" id="20_death_4"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_5.png" id="21_death_5"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_6.png" id="22_death_6"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_7.png" id="23_death_7"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_8.png" id="24_death_8"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_9.png" id="25_death_9"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_10.png" id="26_death_10"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_11.png" id="27_death_11"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_12.png" id="28_death_12"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_13.png" id="29_death_13"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_14.png" id="30_death_14"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_15.png" id="31_death_15"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_16.png" id="32_death_16"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_17.png" id="33_death_17"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_18.png" id="34_death_18"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_19.png" id="35_death_19"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_20.png" id="36_death_20"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_21.png" id="37_death_21"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/05_demon_death/demon_death_22.png" id="38_death_22"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/01_demon_idle/demon_idle_1.png" id="39_idle_1"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/01_demon_idle/demon_idle_2.png" id="40_idle_2"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/01_demon_idle/demon_idle_3.png" id="41_idle_3"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/01_demon_idle/demon_idle_4.png" id="42_idle_4"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/01_demon_idle/demon_idle_5.png" id="43_idle_5"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/01_demon_idle/demon_idle_6.png" id="44_idle_6"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_1.png" id="45_walk_1"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_2.png" id="46_walk_2"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_3.png" id="47_walk_3"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_4.png" id="48_walk_4"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_5.png" id="49_walk_5"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_6.png" id="50_walk_6"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_7.png" id="51_walk_7"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_8.png" id="52_walk_8"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_9.png" id="53_walk_9"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_10.png" id="54_walk_10"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_11.png" id="55_walk_11"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/02_demon_walk/demon_walk_12.png" id="56_walk_12"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/04_demon_take_hit/demon_take_hit_1.png" id="57_hit_1"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/04_demon_take_hit/demon_take_hit_2.png" id="58_hit_2"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/04_demon_take_hit/demon_take_hit_3.png" id="59_hit_3"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/04_demon_take_hit/demon_take_hit_4.png" id="60_hit_4"]
+[ext_resource type="Texture2D" path="res://Sprites/boss_demon_slime_FREE_v1.0/individual sprites/04_demon_take_hit/demon_take_hit_5.png" id="61_hit_5"]
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_boss"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("57_hit_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("58_hit_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("59_hit_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("60_hit_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("61_hit_5")
+}],
+"loop": true,
+"name": &"barrage",
+"speed": 20.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("17_death_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("18_death_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("19_death_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("20_death_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("21_death_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("22_death_6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("23_death_7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("24_death_8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("25_death_9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("26_death_10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("27_death_11")
+}, {
+"duration": 1.0,
+"texture": ExtResource("28_death_12")
+}, {
+"duration": 1.0,
+"texture": ExtResource("29_death_13")
+}, {
+"duration": 1.0,
+"texture": ExtResource("30_death_14")
+}, {
+"duration": 1.0,
+"texture": ExtResource("31_death_15")
+}, {
+"duration": 1.0,
+"texture": ExtResource("32_death_16")
+}, {
+"duration": 1.0,
+"texture": ExtResource("33_death_17")
+}, {
+"duration": 1.0,
+"texture": ExtResource("34_death_18")
+}, {
+"duration": 1.0,
+"texture": ExtResource("35_death_19")
+}, {
+"duration": 1.0,
+"texture": ExtResource("36_death_20")
+}, {
+"duration": 1.0,
+"texture": ExtResource("37_death_21")
+}, {
+"duration": 1.0,
+"texture": ExtResource("38_death_22")
+}],
+"loop": false,
+"name": &"death",
+"speed": 12.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("39_idle_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("40_idle_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("41_idle_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("42_idle_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("43_idle_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("44_idle_6")
+}],
+"loop": true,
+"name": &"idle",
+"speed": 6.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("45_walk_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("46_walk_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("47_walk_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("48_walk_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("49_walk_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("50_walk_6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("51_walk_7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("52_walk_8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("53_walk_9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("54_walk_10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("55_walk_11")
+}, {
+"duration": 1.0,
+"texture": ExtResource("56_walk_12")
+}],
+"loop": true,
+"name": &"move",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_cleave_1")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_cleave_2")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_cleave_3")
+}, {
+"duration": 1.0,
+"texture": ExtResource("10_cleave_9")
+}, {
+"duration": 1.0,
+"texture": ExtResource("11_cleave_10")
+}, {
+"duration": 1.0,
+"texture": ExtResource("12_cleave_11")
+}, {
+"duration": 1.0,
+"texture": ExtResource("13_cleave_12")
+}],
+"loop": false,
+"name": &"spiral",
+"speed": 10.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("5_cleave_4")
+}, {
+"duration": 1.0,
+"texture": ExtResource("6_cleave_5")
+}, {
+"duration": 1.0,
+"texture": ExtResource("7_cleave_6")
+}, {
+"duration": 1.0,
+"texture": ExtResource("8_cleave_7")
+}, {
+"duration": 1.0,
+"texture": ExtResource("9_cleave_8")
+}, {
+"duration": 1.0,
+"texture": ExtResource("14_cleave_13")
+}, {
+"duration": 1.0,
+"texture": ExtResource("15_cleave_14")
+}, {
+"duration": 1.0,
+"texture": ExtResource("16_cleave_15")
+}],
+"loop": false,
+"name": &"stomp",
+"speed": 15.0
+}]
 
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 45.0
@@ -14,10 +286,13 @@ speed = 100.0
 health = 1500.0
 damage = 15.0
 
-[node name="Sprite2D" type="Sprite2D" parent="."]
-modulate = Color(0.8, 0, 1, 1)
-scale = Vector2(1.5, 1.5)
-texture = ExtResource("2_icon")
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, -32)
+scale = Vector2(2, 2)
+sprite_frames = SubResource("SpriteFrames_boss")
+animation = &"idle"
+autoplay = "idle"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 shape = SubResource("CircleShape2D_1")
@@ -25,7 +300,7 @@ shape = SubResource("CircleShape2D_1")
 [node name="HealthBar" type="ProgressBar" parent="."]
 modulate = Color(1, 0.4, 0, 1)
 offset_left = -60.0
-offset_top = 80.0
+offset_top = 40.0
 offset_right = 60.0
-offset_bottom = 95.0
+offset_bottom = 55.0
 show_percentage = false

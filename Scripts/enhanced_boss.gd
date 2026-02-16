@@ -10,7 +10,7 @@ var is_dead = false
 var is_active = false
 
 @onready var player = get_tree().get_first_node_in_group("player")
-@onready var sprite = $Sprite2D
+@onready var sprite = $AnimatedSprite2D
 @onready var hp_bar = $HealthBar
 
 # Preload scenes locally to be safe
@@ -91,26 +91,38 @@ func set_state(new_state):
 		match current_state:
 			State.CHASING:
 				sprite.modulate = Color(1, 1, 1)
+				sprite.play("move")
+				sprite.speed_scale = 1.0
 				attack_cooldown_timer = 0.0 # Reset cooldown counting
 				
 			State.DASHING:
 				sprite.modulate = Color(1, 0.5, 0) # Orange
+				sprite.play("move")
+				sprite.speed_scale = 2.0 # Faster animation during dash
 				if is_instance_valid(player):
 					var dir = (player.global_position - global_position).normalized()
 					velocity = dir * speed * 4.0 # Dash fast
 					
 			State.SHOOTING: # Circular Blast
 				sprite.modulate = Color(1, 0.2, 0.2) # Red
+				sprite.speed_scale = 1.0
+				sprite.play("stomp") # Custom stomp animation
 				shoot_circular()
 				
 			State.BARRAGE: # Machine Gun
 				sprite.modulate = Color(0.2, 0.2, 1) # Blue
+				sprite.speed_scale = 1.0
+				sprite.play("barrage") # Custom jittery animation
 				
 			State.SPIRAL: # Rotating pattern
 				sprite.modulate = Color(0.8, 0.2, 0.8) # Purple
+				sprite.speed_scale = 1.0
+				sprite.play("spiral") # Custom wind-up animation
 				
 			State.SUMMONING:
 				sprite.modulate = Color(0.2, 1, 0.2) # Green
+				sprite.speed_scale = 1.0
+				sprite.play("stomp") # Stomp to summon
 				spawn_minions()
 
 func _physics_process(delta):
@@ -141,6 +153,13 @@ func _physics_process(delta):
 			if is_instance_valid(player):
 				var dir = (player.global_position - global_position).normalized()
 				velocity = dir * speed
+				
+				if sprite:
+					if velocity.x > 0:
+						sprite.flip_h = true
+					elif velocity.x < 0:
+						sprite.flip_h = false
+						
 				move_and_slide()
 			else:
 				velocity = velocity.lerp(Vector2.ZERO, delta * 5.0)
@@ -294,8 +313,8 @@ func die():
 	is_dead = true
 	if sprite:
 		# Cool death effect
+		sprite.play("death")
 		var tween = create_tween()
-		tween.tween_property(sprite, "scale", Vector2.ZERO, 1.0)
-		tween.parallel().tween_property(sprite, "rotation", PI * 4, 1.0)
-		await tween.finished
+		tween.tween_property(sprite, "modulate:a", 0.0, 1.5)
+		await sprite.animation_finished
 	queue_free()
