@@ -11,7 +11,7 @@ func _process(_delta):
 	current_cooldown -= _delta
 	if current_cooldown <= 0:
 		fire_swing()
-		current_cooldown = cooldown
+		current_cooldown = get_actual_cooldown()
 
 func fire_swing():
 	var player = get_parent()

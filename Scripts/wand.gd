@@ -18,7 +18,7 @@ func _process(delta):
 		# Wand auto-fires at mouse? Or should we wait for click?
 		# Autoshooting at mouse is safer for survivors-like
 		fire_at_mouse()
-		current_cooldown = cooldown
+		current_cooldown = get_actual_cooldown()
 
 func fire_at_mouse():
 	var mouse_pos = get_global_mouse_position()

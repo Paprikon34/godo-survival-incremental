@@ -13,6 +13,7 @@ signal level_up
 @export var piercing_count: int = 0
 @export var regeneration: float = 0.5 # HP per second
 @export var defense: float = 0.0
+@export var attack_speed_multiplier: float = 1.0
 
 var regen_timer: float = 0.0
 var last_facing_direction: Vector2 = Vector2.RIGHT

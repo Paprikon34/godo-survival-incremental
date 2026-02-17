@@ -6,13 +6,19 @@ extends Node2D
 
 var current_cooldown: float = 0.0
 
+func get_actual_cooldown() -> float:
+	var player = get_parent()
+	if player and "attack_speed_multiplier" in player:
+		return cooldown / player.attack_speed_multiplier
+	return cooldown
+
 func _process(_delta):
 	current_cooldown -= _delta
 	if current_cooldown <= 0:
 		var target = find_nearest_enemy()
 		if target:
 			fire(target)
-			current_cooldown = cooldown
+			current_cooldown = get_actual_cooldown()
 
 func find_nearest_enemy() -> Node2D:
 	var enemies = get_tree().get_nodes_in_group("enemy")

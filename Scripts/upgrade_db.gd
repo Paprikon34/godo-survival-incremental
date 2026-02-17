@@ -105,6 +105,13 @@ static var UPGRADES = [
 		"type": "weapon_unlock",
 		"id": "sword",
 		"weight": 4
+	},
+	{
+		"name": "Relentless Rhythm",
+		"description": "Attack Speed +10%",
+		"type": "stat",
+		"id": "attack_speed",
+		"weight": 5
 	}
 ]
 
@@ -189,6 +196,9 @@ static func apply_upgrade(player: Node, upgrade_id: String):
 		"defense":
 			if "defense" in player:
 				player.defense += 2.5
+		"attack_speed":
+			if "attack_speed_multiplier" in player:
+				player.attack_speed_multiplier += 0.1
 		"regeneration":
 			if "regeneration" in player:
 				player.regeneration += 0.1

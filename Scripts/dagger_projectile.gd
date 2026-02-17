@@ -5,6 +5,7 @@ extends Area2D
 @export var lifetime: float = 1.2
 
 var direction: Vector2 = Vector2.RIGHT
+var pierce_count: int = 0
 
 func _ready():
 	# Rotate the dagger to face movement direction
@@ -33,5 +34,7 @@ func _on_body_entered(body):
 			_after_hit()
 
 func _after_hit():
-	# Daggers could potentially pierce, but let's start simple
-	queue_free()
+	if pierce_count > 0:
+		pierce_count -= 1
+	else:
+		queue_free()

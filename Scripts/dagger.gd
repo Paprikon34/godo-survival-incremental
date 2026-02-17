@@ -12,7 +12,7 @@ func _process(_delta):
 	current_cooldown -= _delta
 	if current_cooldown <= 0:
 		fire_forward()
-		current_cooldown = cooldown
+		current_cooldown = get_actual_cooldown()
 
 func fire_forward():
 	var player = get_parent()
@@ -29,14 +29,17 @@ func _spawn_dagger(direction: Vector2):
 	dagger.global_position = global_position
 	
 	# Apply damage multiplier
-	var player = get_parent()
-	var dmg_mult = 1.0
-	if player and "damage_multiplier" in player:
-		dmg_mult = player.damage_multiplier
+	var pierce = 0
+	if player:
+		if "damage_multiplier" in player:
+			dmg_mult = player.damage_multiplier
+		if "piercing_count" in player:
+			pierce = player.piercing_count
 	
 	dagger.direction = direction
 	dagger.speed = projectile_speed
 	dagger.damage = damage * dmg_mult
+	dagger.pierce_count = pierce
 	
 	# Add to world parent to prevent following player
 	get_tree().root.add_child(dagger)

@@ -64,6 +64,7 @@ Swings in a wide arc in the direction the player is facing. High damage but shor
 | **Despair** | Enemies get **+5% Speed/HP**, but you get **+10% XP**. |
 | **Defense** | Increases Defense by **+2.5**. |
 | **Regeneration** | Increases Regen by **+0.1 HP/s**. |
+| **Relentless Rhythm** | Increases Attack Speed by **+10%**. |
 
 ---
 

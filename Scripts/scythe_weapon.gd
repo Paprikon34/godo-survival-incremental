@@ -12,7 +12,11 @@ func _ready():
 
 func _process(delta):
 	# Rotate the entire weapon container
-	rotation += orbit_speed * delta
+	var mult = 1.0
+	var player = get_parent()
+	if player and "attack_speed_multiplier" in player:
+		mult = player.attack_speed_multiplier
+	rotation += (orbit_speed * mult) * delta
 
 func update_scythes():
 	# Clean up existing scythes
@@ -28,13 +32,7 @@ func update_scythes():
 		var angle = (PI * 2 / projectile_count) * i
 		scythe.position = Vector2(cos(angle), sin(angle)) * radius
 		
-		# Apply current damage
-		var player = get_parent()
-		var dmg_mult = 1.0
-		if player and "damage_multiplier" in player:
-			dmg_mult = player.damage_multiplier
-			
-		scythe.damage = damage * dmg_mult
+		scythe.damage = damage
 
 func upgrade():
 	projectile_count += 1

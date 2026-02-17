@@ -27,4 +27,8 @@ func _on_body_entered(body):
 	if body.is_in_group(target_group):
 		if body.has_method("take_damage"):
 			body.take_damage(damage)
-		queue_free()
+		
+		if pierce_count > 0:
+			pierce_count -= 1
+		else:
+			queue_free()
