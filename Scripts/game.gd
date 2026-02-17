@@ -9,6 +9,7 @@ extends Node2D
 @export var elite_boss_scene: PackedScene
 @export var splitting_boss_scene: PackedScene
 @export var splitting_enemy_scene: PackedScene
+@export var golem_enemy_scene: PackedScene
 
 var WAVE_DATA = [
 	{ "time": 0, "interval": 2.0, "enemies": ["basic"] },
@@ -20,7 +21,8 @@ var WAVE_DATA = [
 	{ "time": 240, "type": "boss", "enemies": ["elite_boss"] }, # Boss 4m
 	{ "time": 245, "interval": 1.0, "enemies": ["basic", "fast", "tank"] },
 	{ "time": 300, "type": "boss", "enemies": ["splitting_boss"] }, # Boss 5m
-	{ "time": 305, "interval": 0.8, "enemies": ["basic", "elite", "tank", "fast", "splitting_enemy"] } # Mix in lower HP enemies
+	{ "time": 305, "interval": 0.8, "enemies": ["basic", "elite", "tank", "fast", "splitting_enemy"] }, # Mix in lower HP enemies
+	{ "time": 600, "interval": 0.6, "enemies": ["basic", "elite", "tank", "fast", "splitting_enemy", "golem"] } # Golem at 10m
 ]
 
 var spawn_timer: float = 0.0
@@ -294,6 +296,7 @@ func update_detailed_upgrade_list():
 			"vitality": desc = "+%d%% Max HP" % [lvl * 10]
 			"luck": desc = "+%d%% Luck" % [lvl * 10]
 			"regeneration": desc = "+%.1f HP/s" % [lvl * 0.1]
+			"attack_speed": desc = "+%d%% Attack Speed" % [lvl * 10]
 			_: desc = "Lvl %d" % [lvl]
 		
 		var l = Label.new()
@@ -501,16 +504,19 @@ func update_stats_label():
 	if stats_label:
 		# Convert multipliers to percentages (e.g., 1.1 -> 110%)
 		var dmg_pct = int(player.damage_multiplier * 100)
+		var aspd_pct = int(player.attack_speed_multiplier * 100)
 		var xp_pct = int(player.xp_multiplier * 100)
 		var luck_pct = int(player.luck_multiplier * 100)
 		
-		stats_label.text = "Player Stats:\nLvl: %d\nHP: %d/%d\nRegen: %.1f/s\nSpeed: %d\nDamage: %d%%\nXP Gain: %d%%\nLuck: %d%%\nDefense: %.1f" % [
+		stats_label.text = "Player Stats:\nLvl: %d\nHP: %d/%d\nRegen: %.1f/s\nSpeed: %d\nDamage: %d%%\nAttack Speed: %d%%\nPiercing: %d\nXP Gain: %d%%\nLuck: %d%%\nDefense: %.1f" % [
 			player.level,
 			player.health,
 			player.max_health,
 			player.regeneration,
 			player.speed,
 			dmg_pct,
+			aspd_pct,
+			player.piercing_count,
 			xp_pct,
 			luck_pct,
 			player.defense
@@ -864,6 +870,10 @@ func spawn_enemy_by_type(type: String):
 			scene = splitting_enemy_scene
 			enemy_name = "Splitting Enemy"
 			stats_path = "res://Resources/Data/Enemies/splitting_enemy.tres"
+		"golem":
+			scene = golem_enemy_scene
+			enemy_name = "Armored Golem"
+			stats_path = "res://Resources/Data/Enemies/golem_enemy.tres"
 
 	if not scene: 
 		Global.console_log("Error: Scene not found for type " + type)

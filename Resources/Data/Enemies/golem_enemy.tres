@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="EnemyData" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://Resources/Types/EnemyData.gd" id="1_script"]
+[ext_resource type="PackedScene" path="res://Scenes/golem_enemy.tscn" id="2_scene"]
+
+[resource]
+script = ExtResource("1_script")
+name = "Armored Golem"
+scene = ExtResource("2_scene")
+health = 60.0
+speed = 60.0
+damage = 20.0
+defense = 5.0
+xp_reward = 100.0
+is_boss = false
+hp_scaling = 2.0

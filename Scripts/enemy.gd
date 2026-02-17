@@ -8,6 +8,7 @@ extends CharacterBody2D
 @export var drops_portal: bool = false
 var portal_boss_type: String = ""
 @export var xp_reward: float = 10.0
+@export var defense: float = 0.0
 @export var gold_reward: int = 1
 @export var attack_interval: float = 0.5
 
@@ -29,6 +30,8 @@ func _ready():
 		health = stats.health
 		max_health = stats.health
 		speed = stats.speed
+		damage = stats.damage
+		defense = stats.defense
 		xp_reward = stats.xp_reward
 	
 	# Apply Game-wide scaling
@@ -80,8 +83,9 @@ func _physics_process(delta):
 func take_damage(amount: float):
 	if is_dead: return
 	
-	health -= amount
-	Global.damage_dealt.emit(amount)
+	var damage_taken = max(0.0, amount - defense)
+	health -= damage_taken
+	Global.damage_dealt.emit(damage_taken)
 	if hp_bar:
 		hp_bar.value = health
 	# Global.console_log("Enemy took " + str(amount) + " damage. Remaining HP: " + str(health))

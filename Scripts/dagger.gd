@@ -29,6 +29,8 @@ func _spawn_dagger(direction: Vector2):
 	dagger.global_position = global_position
 	
 	# Apply damage multiplier
+	var player = get_parent()
+	var dmg_mult = 1.0
 	var pierce = 0
 	if player:
 		if "damage_multiplier" in player:

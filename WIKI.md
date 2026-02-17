@@ -116,7 +116,15 @@ Spawns after 5 minutes.
 - **Ability**: Splits into 2 **Slimes** upon death.
 - **XP Bounty**: 50
 
-### 💀 Bosses
+### � Armored Golem
+The ultimate juggernaut. Spawns after **10 minutes**.
+- **Health**: 60 (+2.0/lvl)
+- **Speed**: 60
+- **Damage**: 20
+- **Defense**: 5 (Reduces incoming damage by 5 per hit)
+- **XP Bounty**: 100
+
+### �💀 Bosses
 Large red enemies that act as **Portal Guardians**.
 - **Boss 1 (1:30)**: 1000 HP, 120 Speed. (Enhanced AI)
 	- **Behavior**: Uses a weighted decision system every 3 seconds to choose an attack.

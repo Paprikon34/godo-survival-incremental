@@ -10,7 +10,8 @@ func take_damage(amount: float):
 	super.take_damage(amount)
 	
 	if not has_split and health <= max_health * 0.5:
-		split()
+		has_split = true
+		call_deferred("split")
 
 func split():
 	has_split = true
