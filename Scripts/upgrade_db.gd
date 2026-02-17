@@ -97,7 +97,7 @@ static var UPGRADES = [
 		"description": "Unlock/Upgrade Scythe (Orbiting)",
 		"type": "weapon_unlock",
 		"id": "scythe",
-		"weight": 4
+		"weight": 5
 	},
 	{
 		"name": "Sword",
