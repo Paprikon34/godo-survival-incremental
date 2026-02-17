@@ -5,7 +5,7 @@ extends CharacterBody2D
 @export var health: float = 1000.0
 @export var damage: float = 20.0
 
-var max_health: float = 1000.0
+@export var max_health: float = 1000.0
 var is_dead = false
 var is_active = false
 
@@ -38,6 +38,9 @@ func _ready():
 	if stats:
 		health = stats.health
 		max_health = stats.health
+	else:
+		# If no stats provided, ensure max_health matches the exported health value
+		max_health = health
 	
 	add_to_group("enemy")
 	if hp_bar:
