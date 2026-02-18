@@ -199,3 +199,10 @@ Accessible only if "Cheats" are enabled in the global settings. Features a verti
 - **Force Boss**: Instantly spawns the Enhanced Boss 1 near the player.
 - **+1 Level**: Instantly levels up the player once.
 - **+10 Levels**: Instantly levels up the player ten times.
+
+---
+
+## 🌍 World
+The game takes place in an infinite, procedurally tiled environment.
+- **Grass Field**: A lush green field with occasional dirt paths.
+- **Infinite Tiling**: The background tiles seamlessly as you move, ensuring you are never at the "edge" of the world.
