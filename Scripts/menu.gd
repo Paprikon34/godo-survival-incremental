@@ -32,7 +32,7 @@ func _ready():
 	_register_upgrade("regeneration", "HP Regen (+0.5/s)", 200, 3, "res://Sprites/regeneration (2).png")
 	_register_upgrade("gold_gain", "Gold Drops (+100%)", 10000, 3, "res://Sprites/gold;.png")
 	_register_upgrade("attack_speed", "Attack Speed (+15%)", 500, 3, "res://Sprites/wepons/dagger.png")
-	_register_upgrade("defense", "Defense (+1)", 250, 5, "res://Sprites/Pixel_art_illustration_shield__Pixelated_metal_shield._Steel_metal_shield_icon_pixelated_for_the_pixel_art_game_and_icon_for_website_and_video_game._old_school_retro_-removebg-preview.png")
+	_register_upgrade("defense", "Defense (+1)", 250, 5, "res://Sprites/Shield.png")
 
 	_setup_upgrades_ui()
 

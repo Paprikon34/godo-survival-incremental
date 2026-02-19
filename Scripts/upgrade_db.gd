@@ -88,7 +88,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "defense",
 		"weight": 8,
-		"icon": "res://Sprites/Pixel_art_illustration_shield__Pixelated_metal_shield._Steel_metal_shield_icon_pixelated_for_the_pixel_art_game_and_icon_for_website_and_video_game._old_school_retro_-removebg-preview.png"
+		"icon": "res://Sprites/Shield.png"
 	},
 	{
 		"name": "Regeneration",
