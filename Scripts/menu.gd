@@ -30,15 +30,20 @@ func _ready():
 	_register_upgrade("damage", "Damage (+5%)", 150, 5)
 	_register_upgrade("speed", "Speed (+20)", 120, 3)
 	_register_upgrade("regeneration", "HP Regen (+0.5/s)", 200, 3)
+	_register_upgrade("gold_gain", "Gold Drops (+100%)", 10000, 3)
+	_register_upgrade("attack_speed", "Attack Speed (+15%)", 500, 3)
+	_register_upgrade("defense", "Defense (+1)", 250, 5)
 
 	_setup_upgrades_ui()
 
 func _setup_upgrades_ui():
 	# 3. Create Panel
+	var panel_width = 600
+	var panel_height = 500
 	upgrades_panel = Panel.new()
 	upgrades_panel.visible = false
-	upgrades_panel.size = Vector2(450, 450)
-	upgrades_panel.position = Vector2((get_viewport_rect().size.x - 450)/2, (get_viewport_rect().size.y - 450)/2)
+	upgrades_panel.size = Vector2(panel_width, panel_height)
+	upgrades_panel.position = (get_viewport_rect().size - upgrades_panel.size) / 2
 	add_child(upgrades_panel)
 	
 	# Title
@@ -46,33 +51,47 @@ func _setup_upgrades_ui():
 	title.text = "Permanent Upgrades"
 	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	title.position = Vector2(0, 10)
-	title.size = Vector2(450, 30)
+	title.size = Vector2(panel_width, 30)
+	title.add_theme_font_size_override("font_size", 24)
 	upgrades_panel.add_child(title)
 	
 	# Gold Display
 	gold_display = Label.new()
-	gold_display.position = Vector2(20, 50)
+	gold_display.position = Vector2(25, 55)
+	gold_display.add_theme_font_size_override("font_size", 18)
 	gold_display.add_theme_color_override("font_color", Color.GOLD)
 	upgrades_panel.add_child(gold_display)
 
 	# Disable All Button
 	var disable_all_btn = Button.new()
 	disable_all_btn.text = "Disable All"
-	disable_all_btn.position = Vector2(300, 45)
-	disable_all_btn.size = Vector2(120, 30)
+	disable_all_btn.position = Vector2(450, 50)
+	disable_all_btn.size = Vector2(120, 35)
 	disable_all_btn.pressed.connect(_on_disable_all_pressed)
 	upgrades_panel.add_child(disable_all_btn)
+	
+	# Scroll Container for Upgrades
+	var scroll = ScrollContainer.new()
+	scroll.position = Vector2(10, 100)
+	scroll.size = Vector2(panel_width - 20, panel_height - 160)
+	upgrades_panel.add_child(scroll)
+	
+	var vbox = VBoxContainer.new()
+	vbox.name = "UpgradeList"
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	vbox.add_theme_constant_override("separation", 10)
+	scroll.add_child(vbox)
 	
 	# Close Button
 	var close = Button.new()
 	close.text = "Close"
-	close.position = Vector2(175, 400)
-	close.size = Vector2(100, 30)
+	close.position = Vector2((panel_width - 120) / 2, panel_height - 50)
+	close.size = Vector2(120, 40)
 	close.pressed.connect(func(): upgrades_panel.visible = false)
 	upgrades_panel.add_child(close)
 	
 	# Upgrade Rows
-	_create_upgrade_ui_rows()
+	_create_upgrade_ui_rows(vbox)
 
 func _register_upgrade(id: String, upgrade_name: String, base_cost: int, max_lvl: int):
 	upgrade_rows[id] = {
@@ -84,34 +103,41 @@ func _register_upgrade(id: String, upgrade_name: String, base_cost: int, max_lvl
 		"toggle_btn": null
 	}
 
-func _create_upgrade_ui_rows():
-	var y_pos = 100
+func _create_upgrade_ui_rows(parent_vbox: VBoxContainer):
 	for id in upgrade_rows:
 		var row = upgrade_rows[id]
-		var container = Control.new()
-		container.position = Vector2(20, y_pos)
-		upgrades_panel.add_child(container)
+		var h_box = HBoxContainer.new()
+		h_box.custom_minimum_size = Vector2(0, 50)
+		h_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		parent_vbox.add_child(h_box)
+		
+		# Spacer for padding
+		var spacer_left = Control.new()
+		spacer_left.custom_minimum_size = Vector2(15, 0)
+		h_box.add_child(spacer_left)
 		
 		var label = Label.new()
-		label.position = Vector2(0, 0)
-		container.add_child(label)
+		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+		label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+		h_box.add_child(label)
 		row.label = label
 		
 		var buy_btn = Button.new()
-		buy_btn.position = Vector2(180, 0)
-		buy_btn.size = Vector2(120, 40)
-		container.add_child(buy_btn)
+		buy_btn.custom_minimum_size = Vector2(140, 45)
+		h_box.add_child(buy_btn)
 		row.buy_btn = buy_btn
 		buy_btn.pressed.connect(func(): _try_buy_upgrade(id))
 		
 		var toggle_btn = Button.new()
-		toggle_btn.position = Vector2(310, 0)
-		toggle_btn.size = Vector2(100, 40)
-		container.add_child(toggle_btn)
+		toggle_btn.custom_minimum_size = Vector2(110, 45)
+		h_box.add_child(toggle_btn)
 		row.toggle_btn = toggle_btn
 		toggle_btn.pressed.connect(func(): _toggle_upgrade_disabled(id))
 		
-		y_pos += 60
+		# Spacer for padding
+		var spacer_right = Control.new()
+		spacer_right.custom_minimum_size = Vector2(15, 0)
+		h_box.add_child(spacer_right)
 
 func _on_disable_all_pressed():
 	var disabled = Global.save_data.get("disabled_upgrades", [])

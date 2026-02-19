@@ -136,7 +136,9 @@ func die():
 		
 	# Give XP to player
 	if player and player.has_method("gain_xp"):
-		Global.add_gold(gold_reward)
+		var gold_lvl = Global.save_data.upgrades.get("gold_gain", 0)
+		var gold_multiplier = 1.0 + gold_lvl  # +100% per level
+		Global.add_gold(int(gold_reward * gold_multiplier))
 		
 		var xp_mult = 1.0
 		var luck_chance = 0.05

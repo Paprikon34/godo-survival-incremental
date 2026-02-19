@@ -9,7 +9,10 @@ var save_data: Dictionary = {
 		"health": 0,
 		"damage": 0,
 		"speed": 0,
-		"regeneration": 0
+		"regeneration": 0,
+		"gold_gain": 0,
+		"attack_speed": 0,
+		"defense": 0
 	},
 	"disabled_upgrades": []
 }
@@ -50,7 +53,7 @@ func load_data():
 	
 	# Verify types
 	if typeof(save_data.upgrades) != TYPE_DICTIONARY:
-		save_data.upgrades = { "health": 0, "damage": 0, "speed": 0, "regeneration": 0 }
+		save_data.upgrades = { "health": 0, "damage": 0, "speed": 0, "regeneration": 0, "gold_gain": 0, "attack_speed": 0, "defense": 0 }
 	if typeof(save_data.disabled_upgrades) != TYPE_ARRAY:
 		save_data.disabled_upgrades = []
 

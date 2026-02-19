@@ -31,7 +31,8 @@ static var UPGRADES = [
 	},
 	{
 		"name": "Wand",
-		"description": "Unlock/Upgrade Magic Wand",
+		"description": "Fires homing projectiles",
+		"description_upgrade": "Cooldown -10%",
 		"type": "weapon_unlock",
 		"id": "wand",
 		"weight": 5
@@ -87,21 +88,24 @@ static var UPGRADES = [
 	},
 	{
 		"name": "Dagger",
-		"description": "Unlock/Upgrade Dagger (Fires forward)",
+		"description": "Fires forward rapidly",
+		"description_upgrade": "Cooldown -10%",
 		"type": "weapon_unlock",
 		"id": "dagger",
 		"weight": 5
 	},
 	{
 		"name": "Scythe",
-		"description": "Unlock/Upgrade Scythe (Orbiting)",
+		"description": "Orbits and damages enemies",
+		"description_upgrade": "+1 Scythe blade",
 		"type": "weapon_unlock",
 		"id": "scythe",
 		"weight": 5
 	},
 	{
 		"name": "Sword",
-		"description": "Unlock/Upgrade Sword (High damage swing)",
+		"description": "High damage swing",
+		"description_upgrade": "Damage +20%",
 		"type": "weapon_unlock",
 		"id": "sword",
 		"weight": 4

@@ -211,10 +211,17 @@ func _show_level_up_menu():
 		if i < options.size():
 			option_buttons[i].visible = true
 			var id = options[i].id
+			var upgrade_type = options[i].get("type", "")
 			var current_lvl = upgrade_counts.get(id, 0)
 			var next_lvl = current_lvl + 1
 			if id == "heal":
 				option_buttons[i].text = "%s: %s" % [options[i].name, options[i].description]
+			elif upgrade_type == "weapon_unlock":
+				if current_lvl == 0:
+					option_buttons[i].text = "Unlock %s: %s" % [options[i].name, options[i].description]
+				else:
+					var upg_desc = options[i].get("description_upgrade", options[i].description)
+					option_buttons[i].text = "Upgrade %s (Lvl %d): %s" % [options[i].name, next_lvl, upg_desc]
 			else:
 				option_buttons[i].text = "%s (Lvl %d): %s" % [options[i].name, next_lvl, options[i].description]
 		else:

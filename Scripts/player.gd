@@ -50,6 +50,16 @@ func _ready():
 		var regen_bonus = upgrades.get("regeneration", 0) * 0.5
 		regeneration += regen_bonus
 	
+	# Attack Speed: +15% per level (Max 3)
+	if "attack_speed" not in disabled:
+		var aspd_bonus = upgrades.get("attack_speed", 0) * 0.15
+		attack_speed_multiplier += aspd_bonus
+		
+	# Defense: +1 per level (Max 5)
+	if "defense" not in disabled:
+		var def_bonus = upgrades.get("defense", 0) * 1.0
+		defense += def_bonus
+	
 	if hp_bar:
 		hp_bar.max_value = max_health
 		hp_bar.value = health
