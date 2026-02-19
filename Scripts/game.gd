@@ -214,6 +214,14 @@ func _show_level_up_menu():
 			var upgrade_type = options[i].get("type", "")
 			var current_lvl = upgrade_counts.get(id, 0)
 			var next_lvl = current_lvl + 1
+			
+			# Set Icon
+			var icon_path = options[i].get("icon", "res://icon.svg")
+			if not FileAccess.file_exists(icon_path):
+				icon_path = "res://icon.svg"
+			option_buttons[i].icon = load(icon_path)
+			option_buttons[i].expand_icon = true
+			
 			if id == "heal":
 				option_buttons[i].text = "%s: %s" % [options[i].name, options[i].description]
 			elif upgrade_type == "weapon_unlock":
@@ -263,23 +271,39 @@ func update_upgrade_list_ui():
 		if id == "heal": continue
 		
 		var lvl = upgrade_counts[id]
-		# Find name from DB
 		var label_text = id + " lvl " + str(lvl)
+		var icon_path = "res://icon.svg"
 		
 		for u in UpgradeDB.UPGRADES:
 			if u.id == id:
 				label_text = "%s lvl %d" % [u.name, lvl]
+				icon_path = u.get("icon", "res://icon.svg")
 				break
 				
+		var hbox = HBoxContainer.new()
+		hbox.alignment = BoxContainer.ALIGNMENT_END
+		
+		var tex = TextureRect.new()
+		if not FileAccess.file_exists(icon_path):
+			icon_path = "res://icon.svg"
+		tex.texture = load(icon_path)
+		tex.custom_minimum_size = Vector2(20, 20)
+		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		hbox.add_child(tex)
+		
 		var l = Label.new()
 		l.text = label_text
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		upgrade_list.add_child(l)
+		hbox.add_child(l)
+		
+		upgrade_list.add_child(hbox)
 
 func update_detailed_upgrade_list():
 	for child in detailed_upgrade_list.get_children():
 		child.queue_free()
 		
+	# Rebuild list
 	for id in upgrade_counts:
 		if id == "heal": continue
 		
@@ -306,10 +330,25 @@ func update_detailed_upgrade_list():
 			"attack_speed": desc = "+%d%% Attack Speed" % [lvl * 10]
 			_: desc = "Lvl %d" % [lvl]
 		
+		var hbox = HBoxContainer.new()
+		hbox.alignment = BoxContainer.ALIGNMENT_END
+		
+		var tex = TextureRect.new()
+		var det_icon = u_data.get("icon", "res://icon.svg")
+		if not FileAccess.file_exists(det_icon):
+			det_icon = "res://icon.svg"
+		tex.texture = load(det_icon)
+		tex.custom_minimum_size = Vector2(24, 24)
+		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		hbox.add_child(tex)
+		
 		var l = Label.new()
 		l.text = "%s lvl %d: %s" % [u_data.name, lvl, desc]
 		l.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
-		detailed_upgrade_list.add_child(l)
+		hbox.add_child(l)
+		
+		detailed_upgrade_list.add_child(hbox)
 
 func on_chest_collected():
 	Global.console_log("Chest collected!")

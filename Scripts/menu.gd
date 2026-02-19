@@ -26,13 +26,13 @@ func _ready():
 	add_child(btn)
 
 	# 2. Register Upgrades (ensure they exist in row registry before UI init)
-	_register_upgrade("health", "Max Health (+10)", 100, 5)
-	_register_upgrade("damage", "Damage (+5%)", 150, 5)
-	_register_upgrade("speed", "Speed (+20)", 120, 3)
-	_register_upgrade("regeneration", "HP Regen (+0.5/s)", 200, 3)
-	_register_upgrade("gold_gain", "Gold Drops (+100%)", 10000, 3)
-	_register_upgrade("attack_speed", "Attack Speed (+15%)", 500, 3)
-	_register_upgrade("defense", "Defense (+1)", 250, 5)
+	_register_upgrade("health", "Max Health (+10)", 100, 5, "res://Sprites/Helth.png")
+	_register_upgrade("damage", "Damage (+5%)", 150, 5, "res://Sprites/Icon24.png")
+	_register_upgrade("speed", "Speed (+20)", 120, 3, "res://Sprites/Boots.png")
+	_register_upgrade("regeneration", "HP Regen (+0.5/s)", 200, 3, "res://Sprites/regeneration (2).png")
+	_register_upgrade("gold_gain", "Gold Drops (+100%)", 10000, 3, "res://Sprites/gold;.png")
+	_register_upgrade("attack_speed", "Attack Speed (+15%)", 500, 3, "res://Sprites/wepons/dagger.png")
+	_register_upgrade("defense", "Defense (+1)", 250, 5, "res://Sprites/Pixel_art_illustration_shield__Pixelated_metal_shield._Steel_metal_shield_icon_pixelated_for_the_pixel_art_game_and_icon_for_website_and_video_game._old_school_retro_-removebg-preview.png")
 
 	_setup_upgrades_ui()
 
@@ -93,11 +93,12 @@ func _setup_upgrades_ui():
 	# Upgrade Rows
 	_create_upgrade_ui_rows(vbox)
 
-func _register_upgrade(id: String, upgrade_name: String, base_cost: int, max_lvl: int):
+func _register_upgrade(id: String, upgrade_name: String, base_cost: int, max_lvl: int, icon_path: String = "res://icon.svg"):
 	upgrade_rows[id] = {
 		"base": base_cost,
 		"max": max_lvl,
 		"name": upgrade_name,
+		"icon": icon_path,
 		"label": null,
 		"buy_btn": null,
 		"toggle_btn": null
@@ -107,7 +108,7 @@ func _create_upgrade_ui_rows(parent_vbox: VBoxContainer):
 	for id in upgrade_rows:
 		var row = upgrade_rows[id]
 		var h_box = HBoxContainer.new()
-		h_box.custom_minimum_size = Vector2(0, 50)
+		h_box.custom_minimum_size = Vector2(0, 60)
 		h_box.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		parent_vbox.add_child(h_box)
 		
@@ -115,6 +116,18 @@ func _create_upgrade_ui_rows(parent_vbox: VBoxContainer):
 		var spacer_left = Control.new()
 		spacer_left.custom_minimum_size = Vector2(15, 0)
 		h_box.add_child(spacer_left)
+		
+		# Upgrade Icon
+		var tex = TextureRect.new()
+		var icon_p = row.icon
+		if not FileAccess.file_exists(icon_p):
+			icon_p = "res://icon.svg"
+		tex.texture = load(icon_p)
+		tex.custom_minimum_size = Vector2(40, 40)
+		tex.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+		tex.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+		tex.size_flags_vertical = Control.SIZE_SHRINK_CENTER
+		h_box.add_child(tex)
 		
 		var label = Label.new()
 		label.size_flags_horizontal = Control.SIZE_EXPAND_FILL

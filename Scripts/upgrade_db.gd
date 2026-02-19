@@ -6,28 +6,32 @@ static var UPGRADES = [
 		"description": "Restore 20 Health",
 		"type": "stat",
 		"id": "heal",
-		"weight": 10
+		"weight": 10,
+		"icon": "res://Sprites/heal.png"
 	},
 	{
 		"name": "Swiftness",
 		"description": "Move Speed +10%",
 		"type": "stat",
 		"id": "speed",
-		"weight": 10
+		"weight": 10,
+		"icon": "res://Sprites/Boots.png"
 	},
 	{
 		"name": "Power",
 		"description": "Damage +10%",
 		"type": "stat",
 		"id": "damage",
-		"weight": 10
+		"weight": 10,
+		"icon": "res://Sprites/Icon24.png"
 	},
 	{
 		"name": "Magic Shotgun",
 		"description": "+1 Projectile",
 		"type": "weapon_upgrade",
 		"id": "magic_shotgun",
-		"weight": 8
+		"weight": 8,
+		"icon": "res://Sprites/Icon10.png"
 	},
 	{
 		"name": "Wand",
@@ -35,56 +39,64 @@ static var UPGRADES = [
 		"description_upgrade": "Cooldown -10%",
 		"type": "weapon_unlock",
 		"id": "wand",
-		"weight": 5
+		"weight": 5,
+		"icon": "res://Sprites/Icon10.png"
 	},
 	{
 		"name": "Smart",
 		"description": "XP Gain +10%",
 		"type": "stat",
 		"id": "smart",
-		"weight": 10
+		"weight": 10,
+		"icon": "res://Sprites/portal/portal_idle_circular-removebg-preview.png"
 	},
 	{
 		"name": "Despair",
 		"description": "Enemies +5% HP/Speed, You get +10% XP",
 		"type": "challenge",
 		"id": "challenge",
-		"weight": 5
+		"weight": 5,
+		"icon": "res://Sprites/Spiked Slime/Slime_Spiked_Idle.png"
 	},
 	{
 		"name": "Vitality",
 		"description": "Max Health +10%",
 		"type": "stat",
 		"id": "vitality",
-		"weight": 10
+		"weight": 10,
+		"icon": "res://Sprites/Helth.png"
 	},
 	{
 		"name": "Luck",
 		"description": "Luck +10%",
 		"type": "stat",
 		"id": "luck",
-		"weight": 10
+		"weight": 10,
+		"icon": "res://Sprites/gold;.png"
 	},
 	{
 		"name": "Piercing",
 		"description": "Projectiles pierce +1 Enemy",
 		"type": "stat",
 		"id": "piercing",
-		"weight": 5
+		"weight": 5,
+		"icon": "res://Sprites/wepons/sword.png"
 	},
 	{
 		"name": "Defense",
 		"description": "Defense +2.5",
 		"type": "stat",
 		"id": "defense",
-		"weight": 8
+		"weight": 8,
+		"icon": "res://Sprites/Pixel_art_illustration_shield__Pixelated_metal_shield._Steel_metal_shield_icon_pixelated_for_the_pixel_art_game_and_icon_for_website_and_video_game._old_school_retro_-removebg-preview.png"
 	},
 	{
 		"name": "Regeneration",
 		"description": "Regen +0.1 HP/s",
 		"type": "stat",
 		"id": "regeneration",
-		"weight": 5
+		"weight": 5,
+		"icon": "res://Sprites/regeneration (2).png"
 	},
 	{
 		"name": "Dagger",
@@ -92,7 +104,8 @@ static var UPGRADES = [
 		"description_upgrade": "Cooldown -10%",
 		"type": "weapon_unlock",
 		"id": "dagger",
-		"weight": 5
+		"weight": 5,
+		"icon": "res://Sprites/wepons/dagger.png"
 	},
 	{
 		"name": "Scythe",
@@ -100,7 +113,8 @@ static var UPGRADES = [
 		"description_upgrade": "+1 Scythe blade",
 		"type": "weapon_unlock",
 		"id": "scythe",
-		"weight": 5
+		"weight": 5,
+		"icon": "res://Sprites/wepons/scyte.png"
 	},
 	{
 		"name": "Sword",
@@ -108,14 +122,16 @@ static var UPGRADES = [
 		"description_upgrade": "Damage +20%",
 		"type": "weapon_unlock",
 		"id": "sword",
-		"weight": 4
+		"weight": 4,
+		"icon": "res://Sprites/wepons/sword.png"
 	},
 	{
 		"name": "Relentless Rhythm",
 		"description": "Attack Speed +10%",
 		"type": "stat",
 		"id": "attack_speed",
-		"weight": 5
+		"weight": 5,
+		"icon": "res://Sprites/wepons/dagger.png"
 	}
 ]
 
