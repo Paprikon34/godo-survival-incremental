@@ -31,7 +31,7 @@ static var UPGRADES = [
 		"type": "weapon_upgrade",
 		"id": "magic_shotgun",
 		"weight": 8,
-		"icon": "res://Sprites/Icon10.png"
+		"icon": "res://Sprites/wepons/Shotgun.png"
 	},
 	{
 		"name": "Wand",
