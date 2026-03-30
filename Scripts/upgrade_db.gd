@@ -48,7 +48,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "smart",
 		"weight": 10,
-		"icon": "res://Sprites/portal/portal_idle_circular-removebg-preview.png"
+		"icon": "res://Sprites/Brain.png"
 	},
 	{
 		"name": "Despair",
