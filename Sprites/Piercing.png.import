@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cs8m1mj5xcapf"
-path="res://.godot/imported/Icon10.png-b000ad0a5cdd3bfd176b73874bd04a35.ctex"
+uid="uid://c46ada1pu1qha"
+path="res://.godot/imported/Piercing.png-e27b5621ddce97e1aaea1d5aa2615428.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Icon10.png"
-dest_files=["res://.godot/imported/Icon10.png-b000ad0a5cdd3bfd176b73874bd04a35.ctex"]
+source_file="res://Sprites/Piercing.png"
+dest_files=["res://.godot/imported/Piercing.png-e27b5621ddce97e1aaea1d5aa2615428.ctex"]
 
 [params]
 

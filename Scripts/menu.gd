@@ -27,7 +27,7 @@ func _ready():
 
 	# 2. Register Upgrades (ensure they exist in row registry before UI init)
 	_register_upgrade("health", "Max Health (+10)", 100, 5, "res://Sprites/Helth.png")
-	_register_upgrade("damage", "Damage (+5%)", 150, 5, "res://Sprites/Icon24.png")
+	_register_upgrade("damage", "Damage (+5%)", 150, 5, "res://Sprites/damage_icon.png")
 	_register_upgrade("speed", "Speed (+20)", 120, 3, "res://Sprites/Boots.png")
 	_register_upgrade("regeneration", "HP Regen (+0.5/s)", 200, 3, "res://Sprites/regeneration (2).png")
 	_register_upgrade("gold_gain", "Gold Drops (+100%)", 10000, 3, "res://Sprites/gold;.png")

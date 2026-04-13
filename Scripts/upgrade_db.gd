@@ -23,7 +23,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "damage",
 		"weight": 10,
-		"icon": "res://Sprites/Icon24.png"
+		"icon": "res://Sprites/Power.png"
 	},
 	{
 		"name": "Magic Shotgun",
@@ -40,7 +40,7 @@ static var UPGRADES = [
 		"type": "weapon_unlock",
 		"id": "wand",
 		"weight": 5,
-		"icon": "res://Sprites/Icon10.png"
+		"icon": "res://Sprites/wand.png"
 	},
 	{
 		"name": "Smart",
@@ -80,7 +80,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "piercing",
 		"weight": 5,
-		"icon": "res://Sprites/wepons/sword.png"
+		"icon": "res://Sprites/Piercing.png"
 	},
 	{
 		"name": "Defense",

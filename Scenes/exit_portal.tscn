@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://d06e0sx5st8hn"]
+[gd_scene format=3 uid="uid://d06e0sx5st8hn"]
 
 [ext_resource type="Script" uid="uid://kdnbwakejnvd" path="res://Scripts/exit_portal.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://bw77qkypalafb" path="res://Sprites/portal/portal_idle_circular-removebg-preview.png" id="2_dyi1j"]
@@ -70,12 +70,12 @@ animations = [{
 [sub_resource type="CircleShape2D" id="CircleShape2D_1"]
 radius = 57.00877
 
-[node name="ExitPortal" type="Area2D"]
+[node name="ExitPortal" type="Area2D" unique_id=895562526]
 collision_layer = 128
 script = ExtResource("1_script")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=781195809]
 sprite_frames = SubResource("SpriteFrames_n7you")
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=765668056]
 shape = SubResource("CircleShape2D_1")
