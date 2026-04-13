@@ -15,7 +15,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "speed",
 		"weight": 10,
-		"icon": "res://Sprites/Movment_speed.png"
+		"icon": "res://Sprites/Move_speed.png"
 	},
 	{
 		"name": "Power",

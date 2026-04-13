@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dhqta0gukc0s1"
-path="res://.godot/imported/Movment_speed.png-d435f6ea65d1d41b4dd18e90cf67817e.ctex"
+uid="uid://dulu0o37g77rm"
+path="res://.godot/imported/Move_speed.png-6dee931dd511faf4bc8521e97b1d446d.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Movment_speed.png"
-dest_files=["res://.godot/imported/Movment_speed.png-d435f6ea65d1d41b4dd18e90cf67817e.ctex"]
+source_file="res://Sprites/Move_speed.png"
+dest_files=["res://.godot/imported/Move_speed.png-6dee931dd511faf4bc8521e97b1d446d.ctex"]
 
 [params]
 
