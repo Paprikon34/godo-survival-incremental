@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://c5t1o5egjdxwl"
-path="res://.godot/imported/Brain.png-b6acdf0456e81a170a9be0ec96d81dff.ctex"
+uid="uid://b4h5yd1pa7n7u"
+path="res://.godot/imported/Meat.png-91a2991d692a40e40b04e7f195664927.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Brain.png"
-dest_files=["res://.godot/imported/Brain.png-b6acdf0456e81a170a9be0ec96d81dff.ctex"]
+source_file="res://Sprites/Meat.png"
+dest_files=["res://.godot/imported/Meat.png-91a2991d692a40e40b04e7f195664927.ctex"]
 
 [params]
 

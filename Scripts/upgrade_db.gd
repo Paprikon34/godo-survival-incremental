@@ -7,7 +7,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "heal",
 		"weight": 10,
-		"icon": "res://Sprites/heal.png"
+		"icon": "res://Sprites/Meat.png"
 	},
 	{
 		"name": "Swiftness",
@@ -15,7 +15,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "speed",
 		"weight": 10,
-		"icon": "res://Sprites/Boots.png"
+		"icon": "res://Sprites/Movment_speed.png"
 	},
 	{
 		"name": "Power",
@@ -48,15 +48,15 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "smart",
 		"weight": 10,
-		"icon": "res://Sprites/Brain.png"
+		"icon": "res://Sprites/Xp_gain.png"
 	},
 	{
 		"name": "Despair",
-		"description": "Enemies +5% HP/Speed, You get +10% XP",
+		"description": "Enemy+5%HP/Speed,get+10%XP",
 		"type": "challenge",
 		"id": "challenge",
 		"weight": 5,
-		"icon": "res://Sprites/Spiked Slime/Slime_Spiked_Idle.png"
+		"icon": "res://Sprites/despair.png"
 	},
 	{
 		"name": "Vitality",
@@ -64,7 +64,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "vitality",
 		"weight": 10,
-		"icon": "res://Sprites/Helth.png"
+		"icon": "res://Sprites/Vitality.png"
 	},
 	{
 		"name": "Luck",
@@ -72,7 +72,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "luck",
 		"weight": 10,
-		"icon": "res://Sprites/gold;.png"
+		"icon": "res://Sprites/Luck.png"
 	},
 	{
 		"name": "Piercing",
@@ -96,7 +96,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "regeneration",
 		"weight": 5,
-		"icon": "res://Sprites/regeneration (2).png"
+		"icon": "res://Sprites/Regeneration.png"
 	},
 	{
 		"name": "Dagger",
@@ -131,7 +131,7 @@ static var UPGRADES = [
 		"type": "stat",
 		"id": "attack_speed",
 		"weight": 5,
-		"icon": "res://Sprites/wepons/dagger.png"
+		"icon": "res://Sprites/attack_speed.png"
 	}
 ]
 

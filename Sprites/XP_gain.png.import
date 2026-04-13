@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://hyctfnyb0g0b"
-path="res://.godot/imported/heal.png-acd79030fa1a5e54f58a1be3c49ff49a.ctex"
+uid="uid://dr8xow7ggr444"
+path="res://.godot/imported/XP_gain.png-6777f9ea267fc789b1a74e9abb166bb1.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/heal.png"
-dest_files=["res://.godot/imported/heal.png-acd79030fa1a5e54f58a1be3c49ff49a.ctex"]
+source_file="res://Sprites/XP_gain.png"
+dest_files=["res://.godot/imported/XP_gain.png-6777f9ea267fc789b1a74e9abb166bb1.ctex"]
 
 [params]
 

@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://baaw68n6jpe0f"
-path="res://.godot/imported/regeneration (2).png-ee2c518c701582ec579a4c463f4f9954.ctex"
+uid="uid://dh8mesqs8hnt4"
+path="res://.godot/imported/despair.png-543ff3682648349a4f9fe9cf65e1aa95.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/regeneration (2).png"
-dest_files=["res://.godot/imported/regeneration (2).png-ee2c518c701582ec579a4c463f4f9954.ctex"]
+source_file="res://Sprites/despair.png"
+dest_files=["res://.godot/imported/despair.png-543ff3682648349a4f9fe9cf65e1aa95.ctex"]
 
 [params]
 

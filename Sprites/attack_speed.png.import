@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://bwh67pr1rn05i"
-path="res://.godot/imported/Helth.png-5f66b709274510815847d381b0899b43.ctex"
+uid="uid://pgspxfs2etl0"
+path="res://.godot/imported/attack_speed.png-d815185a4c5f3877044fbff14df9ff08.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Sprites/Helth.png"
-dest_files=["res://.godot/imported/Helth.png-5f66b709274510815847d381b0899b43.ctex"]
+source_file="res://Sprites/attack_speed.png"
+dest_files=["res://.godot/imported/attack_speed.png-d815185a4c5f3877044fbff14df9ff08.ctex"]
 
 [params]
 
