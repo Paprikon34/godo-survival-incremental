@@ -85,6 +85,7 @@ var damage_history = [] # Rolling window of [timestamp, amount]
 @onready var dmg_button = $CheatLayer/CheatMenu/SuperDamageToggle
 @onready var reset_button = $CheatLayer/CheatMenu/ResetTimer
 @onready var force_boss_button = $CheatLayer/CheatMenu/ForceBossBtn
+var cheat_upgrade_panel: Panel
 
 func _ready():
 	screen_size = get_viewport_rect().size
@@ -131,6 +132,15 @@ func _ready():
 	if Global.cheats_enabled:
 		# Manual connections removed as they are now in the scene file
 		Global.console_log("CHEATS ENABLED!")
+		
+		# Add Upgrade Cheat Button
+		var upg_cheat_btn = Button.new()
+		upg_cheat_btn.text = "Get Upgrades"
+		upg_cheat_btn.add_theme_font_size_override("font_size", 12)
+		upg_cheat_btn.pressed.connect(_on_open_upgrade_cheat_menu)
+		cheat_menu.add_child(upg_cheat_btn)
+		
+		_build_upgrade_cheat_menu()
 		
 	level_up_menu.process_mode = Node.PROCESS_MODE_ALWAYS
 	pause_menu.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -1084,3 +1094,80 @@ func _on_lvl_up_10():
 		if player.has_method("force_level_up"):
 			for i in range(10):
 				player.force_level_up()
+
+func _build_upgrade_cheat_menu():
+	cheat_upgrade_panel = Panel.new()
+	cheat_upgrade_panel.visible = false
+	cheat_upgrade_panel.custom_minimum_size = Vector2(400, 400)
+	cheat_upgrade_panel.size = Vector2(400, 400)
+	cheat_upgrade_panel.position = Vector2(get_viewport_rect().size.x / 2 - 200, get_viewport_rect().size.y / 2 - 200)
+	cheat_upgrade_panel.process_mode = Node.PROCESS_MODE_ALWAYS
+	
+	var close_btn = Button.new()
+	close_btn.text = "X"
+	close_btn.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
+	close_btn.offset_left = -40
+	close_btn.offset_top = 10
+	close_btn.offset_right = -10
+	close_btn.offset_bottom = 40
+	close_btn.custom_minimum_size = Vector2(30, 30)
+	close_btn.pressed.connect(func():
+		cheat_upgrade_panel.visible = false
+		get_tree().paused = false
+		set_ui_state_paused(false)
+	)
+	cheat_upgrade_panel.add_child(close_btn)
+	
+	var label = Label.new()
+	label.text = "Cheat: Select Upgrade"
+	label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	label.offset_right = -40
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.position.y = 10
+	cheat_upgrade_panel.add_child(label)
+	
+	var scroll = ScrollContainer.new()
+	scroll.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	scroll.offset_left = 20
+	scroll.offset_top = 50
+	scroll.offset_right = -20
+	scroll.offset_bottom = -20
+	cheat_upgrade_panel.add_child(scroll)
+	
+	var vbox = VBoxContainer.new()
+	vbox.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	scroll.add_child(vbox)
+	
+	for upgrade in UpgradeDB.UPGRADES:
+		var btn = Button.new()
+		btn.text = " " + upgrade.name
+		var icon_path = upgrade.get("icon", "res://icon.svg")
+		if not FileAccess.file_exists(icon_path):
+			icon_path = "res://icon.svg"
+		var tex = load(icon_path)
+		if tex:
+			btn.icon = tex
+			btn.expand_icon = true
+			btn.custom_minimum_size = Vector2(0, 50)
+			
+		btn.pressed.connect(_on_cheat_give_upgrade.bind(upgrade.id))
+		vbox.add_child(btn)
+		
+	cheat_upgrade_panel.z_index = 100
+	$CanvasLayer/UI.add_child(cheat_upgrade_panel)
+
+func _on_open_upgrade_cheat_menu():
+	if cheat_upgrade_panel:
+		cheat_upgrade_panel.visible = true
+		get_tree().paused = true
+		set_ui_state_paused(true)
+
+func _on_cheat_give_upgrade(id: String):
+	UpgradeDB.apply_upgrade(player, id)
+	if id in upgrade_counts:
+		upgrade_counts[id] += 1
+	else:
+		upgrade_counts[id] = 1
+	update_upgrade_list_ui()
+	update_detailed_upgrade_list()
+	Global.console_log("Cheat upgrade granted: " + id)
