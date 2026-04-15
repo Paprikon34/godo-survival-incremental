@@ -31,7 +31,7 @@ func _ready():
 	_register_upgrade("speed", "Speed (+20)", 120, 3, "res://Sprites/Boots.png")
 	_register_upgrade("regeneration", "HP Regen (+0.5/s)", 200, 3, "res://Sprites/Regeneration.png")
 	_register_upgrade("gold_gain", "Gold Drops (+100%)", 10000, 3, "res://Sprites/gold;.png")
-	_register_upgrade("attack_speed", "Attack Speed (+15%)", 500, 3, "res://Sprites/wepons/dagger.png")
+	_register_upgrade("attack_speed", "Attack Speed (+15%)", 500, 3, "res://Sprites/attack_speed.png")
 	_register_upgrade("defense", "Defense (+1)", 250, 5, "res://Sprites/Shield.png")
 
 	_setup_upgrades_ui()

@@ -1,8 +1,8 @@
-[gd_scene load_steps=2 format=3 uid="uid://e1n2o3p4q5r6"]
+[gd_scene format=3 uid="uid://e1n2o3p4q5r6"]
 
 [ext_resource type="Script" uid="uid://c2f2whgywltpf" path="res://Scripts/menu.gd" id="1_menu"]
 
-[node name="Menu" type="Control"]
+[node name="Menu" type="Control" unique_id=524441295]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -11,7 +11,7 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_menu")
 
-[node name="CenterContainer" type="CenterContainer" parent="."]
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=1363070119]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -19,32 +19,32 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer"]
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer" unique_id=888069573]
 layout_mode = 2
 
-[node name="Title" type="Label" parent="CenterContainer/VBoxContainer"]
+[node name="Title" type="Label" parent="CenterContainer/VBoxContainer" unique_id=1050220449]
 layout_mode = 2
 theme_override_font_sizes/font_size = 40
 text = "Vampire Survivors Clone"
 horizontal_alignment = 1
 
-[node name="Spacer" type="Control" parent="CenterContainer/VBoxContainer"]
+[node name="Spacer" type="Control" parent="CenterContainer/VBoxContainer" unique_id=2110289545]
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 
-[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="StartButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=656188250]
 layout_mode = 2
 text = "Start Game"
 
-[node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="SettingsButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1205513893]
 layout_mode = 2
 text = "Settings"
 
-[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer"]
+[node name="QuitButton" type="Button" parent="CenterContainer/VBoxContainer" unique_id=1251114672]
 layout_mode = 2
 text = "Quit"
 
-[node name="SettingsPanel" type="Panel" parent="."]
+[node name="SettingsPanel" type="Panel" parent="." unique_id=1295806778]
 visible = false
 layout_mode = 1
 anchors_preset = 8
@@ -59,7 +59,7 @@ offset_bottom = 100.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="VBoxContainer" type="VBoxContainer" parent="SettingsPanel"]
+[node name="VBoxContainer" type="VBoxContainer" parent="SettingsPanel" unique_id=2045284301]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -68,23 +68,23 @@ grow_horizontal = 2
 grow_vertical = 2
 alignment = 1
 
-[node name="DebugCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer"]
+[node name="DebugCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer" unique_id=1109942303]
 layout_mode = 2
 text = "Debug Console"
 
-[node name="CheatsCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer"]
+[node name="CheatsCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer" unique_id=7596712]
 layout_mode = 2
 text = "Enable Cheats"
 
-[node name="FPSCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer"]
+[node name="FPSCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer" unique_id=677504086]
 layout_mode = 2
 text = "Show FPS"
 
-[node name="DPSCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer"]
+[node name="DPSCheck" type="CheckButton" parent="SettingsPanel/VBoxContainer" unique_id=783326904]
 layout_mode = 2
 text = "Show DPS"
 
-[node name="BackButton" type="Button" parent="SettingsPanel/VBoxContainer"]
+[node name="BackButton" type="Button" parent="SettingsPanel/VBoxContainer" unique_id=803451951]
 layout_mode = 2
 text = "Back"
 

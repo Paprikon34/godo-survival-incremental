@@ -40,7 +40,7 @@ static var UPGRADES = [
 		"type": "weapon_unlock",
 		"id": "wand",
 		"weight": 5,
-		"icon": "res://Sprites/wand.png"
+		"icon": "res://Sprites/Wand.png"
 	},
 	{
 		"name": "Smart",
