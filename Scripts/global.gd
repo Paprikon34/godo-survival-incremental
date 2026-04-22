@@ -3,7 +3,9 @@ extends Node
 var debug_enabled: bool = false
 var cheats_enabled: bool = false
 var fps_enabled: bool = true
+var fast_forward_button_enabled: bool = true
 var save_data: Dictionary = {
+	"fast_forward_button_enabled": true,
 	"gold": 0,
 	"upgrades": {
 		"health": 0,
@@ -56,6 +58,9 @@ func load_data():
 		save_data.upgrades = { "health": 0, "damage": 0, "speed": 0, "regeneration": 0, "gold_gain": 0, "attack_speed": 0, "defense": 0 }
 	if typeof(save_data.disabled_upgrades) != TYPE_ARRAY:
 		save_data.disabled_upgrades = []
+	if typeof(save_data.get("fast_forward_button_enabled")) != TYPE_BOOL:
+		save_data.fast_forward_button_enabled = true
+	fast_forward_button_enabled = save_data.fast_forward_button_enabled
 
 func save_game():
 	var file = FileAccess.open(SAVE_PATH, FileAccess.WRITE)

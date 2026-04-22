@@ -5,6 +5,7 @@ extends Control
 @onready var cheats_check = $SettingsPanel/VBoxContainer/CheatsCheck
 @onready var fps_check = $SettingsPanel/VBoxContainer/FPSCheck
 @onready var dps_check = $SettingsPanel/VBoxContainer/DPSCheck
+var ff_check: CheckButton
 
 var upgrades_panel: Panel
 var gold_display: Label
@@ -16,6 +17,14 @@ func _ready():
 	cheats_check.button_pressed = Global.cheats_enabled
 	fps_check.button_pressed = Global.fps_enabled
 	dps_check.button_pressed = Global.dps_enabled
+	
+	# Add Fast Forward check dynamically
+	ff_check = CheckButton.new()
+	ff_check.text = "Fast Forward Button"
+	ff_check.button_pressed = Global.fast_forward_button_enabled
+	ff_check.toggled.connect(_on_ff_check_toggled)
+	$SettingsPanel/VBoxContainer.add_child(ff_check)
+	$SettingsPanel/VBoxContainer.move_child(ff_check, $SettingsPanel/VBoxContainer.get_child_count() - 2) # Place before Back button
 	
 	# 1. Create Upgrades Button (Main Menu)
 	var btn = Button.new()
@@ -240,3 +249,8 @@ func _on_fps_check_toggled(toggled_on):
 
 func _on_dps_check_toggled(toggled_on):
 	Global.dps_enabled = toggled_on
+
+func _on_ff_check_toggled(toggled_on):
+	Global.fast_forward_button_enabled = toggled_on
+	Global.save_data.fast_forward_button_enabled = toggled_on
+	Global.save_game()

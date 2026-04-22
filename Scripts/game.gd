@@ -86,8 +86,11 @@ var damage_history = [] # Rolling window of [timestamp, amount]
 @onready var reset_button = $CheatLayer/CheatMenu/ResetTimer
 @onready var force_boss_button = $CheatLayer/CheatMenu/ForceBossBtn
 var cheat_upgrade_panel: Panel
+var ff_button: TextureButton
+var ff_speed_state: int = 0 # 0: 1x, 1: 2x, 2: 3x
 
 func _ready():
+	Engine.time_scale = 1.0 # Reset speed on start/reload
 	screen_size = get_viewport_rect().size
 	if player:
 		player.level_up.connect(_on_level_up)
@@ -141,6 +144,9 @@ func _ready():
 		cheat_menu.add_child(upg_cheat_btn)
 		
 		_build_upgrade_cheat_menu()
+		
+	# Fast Forward Button Setup
+	_setup_ff_button()
 		
 	level_up_menu.process_mode = Node.PROCESS_MODE_ALWAYS
 	pause_menu.process_mode = Node.PROCESS_MODE_ALWAYS
@@ -582,6 +588,7 @@ func _on_resume_pressed():
 	toggle_pause()
 
 func _on_quit_pressed():
+	Engine.time_scale = 1.0 # Reset speed before leaving
 	toggle_pause() # Unpause before leaving
 	get_tree().change_scene_to_file("res://Scenes/menu.tscn")
 
@@ -738,6 +745,45 @@ func _process(delta):
 	var minutes = int(elapsed_time / 60)
 	var seconds = int(elapsed_time) % 60
 	time_label.text = "%02d:%02d" % [minutes, seconds]
+	
+	# Update FF Button Position in case of window resize or UI shifts
+	if ff_button and ff_button.visible:
+		ff_button.global_position = time_label.global_position + Vector2(65, 3)
+
+func _setup_ff_button():
+	ff_button = TextureButton.new()
+	ff_button.name = "FastForwardButton"
+	ff_button.texture_normal = load("res://Sprites/Fast_fv1.png")
+	ff_button.ignore_texture_size = false
+	ff_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
+	ff_button.custom_minimum_size = Vector2(20, 20)
+	ff_button.size = Vector2(20, 20)
+	
+	$CanvasLayer/UI.add_child(ff_button)
+	
+	ff_button.visible = Global.fast_forward_button_enabled
+	ff_button.pressed.connect(_on_ff_button_pressed)
+	
+	# Position it next to time label (will be refined in _process or once layout settles)
+	# time_label is at anchor 0.5 (center)
+	ff_button.global_position = time_label.global_position + Vector2(65, 3)
+
+func _on_ff_button_pressed():
+	ff_speed_state = (ff_speed_state + 1) % 3
+	
+	match ff_speed_state:
+		0:
+			Engine.time_scale = 1.0
+			ff_button.texture_normal = load("res://Sprites/Fast_fv1.png")
+			Global.console_log("Speed: 1x")
+		1:
+			Engine.time_scale = 2.0
+			ff_button.texture_normal = load("res://Sprites/Fast_fv2.png")
+			Global.console_log("Speed: 2x")
+		2:
+			Engine.time_scale = 3.0
+			ff_button.texture_normal = load("res://Sprites/Fast_fv3.png")
+			Global.console_log("Speed: 3x")
 
 
 	# Performance: Enemy Culling & Debug Info
