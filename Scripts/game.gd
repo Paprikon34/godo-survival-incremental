@@ -748,16 +748,16 @@ func _process(delta):
 	
 	# Update FF Button Position in case of window resize or UI shifts
 	if ff_button and ff_button.visible:
-		ff_button.global_position = time_label.global_position + Vector2(65, 3)
+		ff_button.global_position = time_label.global_position + Vector2(65, 4)
 
 func _setup_ff_button():
 	ff_button = TextureButton.new()
 	ff_button.name = "FastForwardButton"
 	ff_button.texture_normal = load("res://Sprites/Fast_fv1.png")
-	ff_button.ignore_texture_size = false
+	ff_button.ignore_texture_size = true
 	ff_button.stretch_mode = TextureButton.STRETCH_KEEP_ASPECT_CENTERED
-	ff_button.custom_minimum_size = Vector2(20, 20)
-	ff_button.size = Vector2(20, 20)
+	ff_button.custom_minimum_size = Vector2(30, 30)
+	ff_button.size = Vector2(30, 30)
 	
 	$CanvasLayer/UI.add_child(ff_button)
 	
@@ -766,7 +766,7 @@ func _setup_ff_button():
 	
 	# Position it next to time label (will be refined in _process or once layout settles)
 	# time_label is at anchor 0.5 (center)
-	ff_button.global_position = time_label.global_position + Vector2(65, 3)
+	ff_button.global_position = time_label.global_position + Vector2(65, 4)
 
 func _on_ff_button_pressed():
 	ff_speed_state = (ff_speed_state + 1) % 3
