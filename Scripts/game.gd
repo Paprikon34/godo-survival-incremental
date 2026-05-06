@@ -1167,6 +1167,7 @@ func _build_upgrade_cheat_menu():
 	var label = Label.new()
 	label.text = "Cheat: Select Upgrade"
 	label.set_anchors_and_offsets_preset(Control.PRESET_TOP_WIDE)
+	label.offset_left = -20
 	label.offset_right = -40
 	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	label.position.y = 10
