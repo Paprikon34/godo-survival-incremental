@@ -136,6 +136,16 @@ static var UPGRADES = [
 	}
 ]
 
+static var CHARACTERS = [
+	{
+		"id": "magic_shotgun",
+		"name": "Magick Shotgun",
+		"starting_weapon": "magic_shotgun",
+		"icon": "res://Sprites/wepons/Shotgun.png",
+		"description": "A powerful sorcerer who mastered the arcane shotgun."
+	}
+]
+
 static func get_random_upgrades(count: int) -> Array:
 	var pool = UPGRADES.duplicate()
 	var selected = []
@@ -189,11 +199,16 @@ static func apply_upgrade(player: Node, upgrade_id: String):
 				Global.console_log("Enemies Buffed! HP Multiplier: " + str(game.enemy_health_multiplier))
 		"magic_shotgun":
 			var mm = player.get_node_or_null("MagicShotgun")
-			if mm:
+			if not mm:
+				mm = Node2D.new()
+				mm.name = "MagicShotgun"
+				mm.set_script(load("res://Scripts/magic_shotgun.gd"))
+				player.add_child(mm)
+			else:
 				if "projectile_count" in mm:
 					mm.projectile_count += 1
 				else:
-					mm.set("projectile_count", 2) # Assuming default is 1
+					mm.set("projectile_count", 2)
 		"wand":
 			var wand = player.get_node_or_null("Wand")
 			if not wand:

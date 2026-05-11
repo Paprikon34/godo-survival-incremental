@@ -4,6 +4,8 @@ var debug_enabled: bool = false
 var cheats_enabled: bool = false
 var fps_enabled: bool = true
 var fast_forward_button_enabled: bool = true
+var selected_character: String = "magick_shotgun"
+var selected_map: String = "forest"
 var save_data: Dictionary = {
 	"fast_forward_button_enabled": true,
 	"gold": 0,

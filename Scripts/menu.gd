@@ -5,11 +5,15 @@ extends Control
 @onready var cheats_check = $SettingsPanel/VBoxContainer/CheatsCheck
 @onready var fps_check = $SettingsPanel/VBoxContainer/FPSCheck
 @onready var dps_check = $SettingsPanel/VBoxContainer/DPSCheck
+@onready var main_menu = $CenterContainer
 var ff_check: CheckButton
 
 var upgrades_panel: Panel
 var gold_display: Label
 var upgrade_rows = {}
+
+var character_panel: Control
+var map_panel: Control
 
 func _ready():
 	# Load current state
@@ -29,10 +33,9 @@ func _ready():
 	# 1. Create Upgrades Button (Main Menu)
 	var btn = Button.new()
 	btn.text = "Upgrades"
-	btn.position = Vector2(50, 300) # Adjust as needed
-	btn.size = Vector2(200, 50)
 	btn.pressed.connect(func(): _open_upgrades_panel())
-	add_child(btn)
+	$CenterContainer/VBoxContainer.add_child(btn)
+	$CenterContainer/VBoxContainer.move_child(btn, $CenterContainer/VBoxContainer.get_child_count() - 2) # Place before Quit
 
 	# 2. Register Upgrades (ensure they exist in row registry before UI init)
 	_register_upgrade("health", "Max Health (+10)", 100, 5, "res://Sprites/Vitality.png")
@@ -44,6 +47,142 @@ func _ready():
 	_register_upgrade("defense", "Defense (+1)", 250, 5, "res://Sprites/Shield.png")
 
 	_setup_upgrades_ui()
+	_setup_selection_ui()
+
+func _setup_selection_ui():
+	# Character Selection Panel
+	character_panel = Control.new() # Use Control instead of Panel for custom BG
+	character_panel.visible = false
+	character_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(character_panel)
+	
+	var char_bg = ColorRect.new()
+	char_bg.color = Color(0.05, 0.05, 0.1, 1.0) # Very dark blue/black
+	char_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	character_panel.add_child(char_bg)
+	
+	# Full-screen centering container
+	var char_center = CenterContainer.new()
+	char_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	character_panel.add_child(char_center)
+	
+	var char_vbox = VBoxContainer.new()
+	char_center.add_child(char_vbox)
+	
+	var title = Label.new()
+	title.text = "Select Character"
+	title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	title.add_theme_font_size_override("font_size", 48)
+	char_vbox.add_child(title)
+	
+	var spacer = Control.new()
+	spacer.custom_minimum_size = Vector2(0, 40)
+	char_vbox.add_child(spacer)
+	
+	var grid = GridContainer.new()
+	grid.columns = 3
+	grid.add_theme_constant_override("h_separation", 30)
+	grid.add_theme_constant_override("v_separation", 30)
+	char_vbox.add_child(grid)
+	
+	# Back Button for character selection
+	var back_btn = Button.new()
+	back_btn.text = "Back to Menu"
+	back_btn.custom_minimum_size = Vector2(200, 50)
+	back_btn.pressed.connect(func(): 
+		character_panel.visible = false
+		main_menu.visible = true
+	)
+	char_vbox.add_child(back_btn)
+	char_vbox.move_child(back_btn, char_vbox.get_child_count()) # Ensure it's at the bottom
+	
+	# Populate Character Grid
+	for char_data in UpgradeDB.CHARACTERS:
+		var btn = Button.new()
+		btn.text = "%s\n\n%s" % [char_data.name, char_data.description]
+		btn.custom_minimum_size = Vector2(250, 300)
+		btn.pressed.connect(func(): _on_character_selected(char_data.id))
+		
+		# Add icon if exists
+		if FileAccess.file_exists(char_data.icon):
+			var icon = TextureRect.new()
+			icon.texture = load(char_data.icon)
+			icon.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+			icon.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_CENTERED
+			icon.custom_minimum_size = Vector2(100, 100)
+			icon.position = Vector2(75, 50)
+			icon.mouse_filter = Control.MOUSE_FILTER_IGNORE
+			btn.add_child(icon)
+			
+		grid.add_child(btn)
+	
+	# Map Selection Panel
+	map_panel = Control.new()
+	map_panel.visible = false
+	map_panel.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	add_child(map_panel)
+	
+	var map_bg = ColorRect.new()
+	map_bg.color = Color(0.05, 0.1, 0.05, 1.0) # Very dark green
+	map_bg.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	map_panel.add_child(map_bg)
+	
+	var map_center = CenterContainer.new()
+	map_center.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
+	map_panel.add_child(map_center)
+	
+	var map_vbox = VBoxContainer.new()
+	map_center.add_child(map_vbox)
+	
+	var map_title = Label.new()
+	map_title.text = "Select Map"
+	map_title.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	map_title.add_theme_font_size_override("font_size", 48)
+	map_vbox.add_child(map_title)
+	
+	var map_spacer = Control.new()
+	map_spacer.custom_minimum_size = Vector2(0, 40)
+	map_vbox.add_child(map_spacer)
+	
+	var map_grid = GridContainer.new()
+	map_grid.columns = 2
+	map_grid.add_theme_constant_override("h_separation", 40)
+	map_vbox.add_child(map_grid)
+	
+	# Define Maps
+	var maps = [
+		{
+			"id": "forest",
+			"name": "The Dark Forest",
+			"description": "Where the monsters roam free."
+		}
+	]
+	
+	for map_data in maps:
+		var btn = Button.new()
+		btn.text = "%s\n\n%s" % [map_data.name, map_data.description]
+		btn.custom_minimum_size = Vector2(300, 250)
+		btn.pressed.connect(func(): _on_map_selected(map_data.id))
+		map_grid.add_child(btn)
+
+	# Back Button for map selection
+	var map_back_btn = Button.new()
+	map_back_btn.text = "Back to Characters"
+	map_back_btn.custom_minimum_size = Vector2(200, 50)
+	map_back_btn.pressed.connect(func(): 
+		map_panel.visible = false
+		character_panel.visible = true
+	)
+	map_vbox.add_child(map_back_btn)
+
+func _on_character_selected(id: String):
+	Global.selected_character = id
+	character_panel.visible = false
+	map_panel.visible = true
+
+func _on_map_selected(id: String):
+	Global.selected_map = id
+	get_tree().change_scene_to_file("res://Scenes/game.tscn")
 
 func _setup_upgrades_ui():
 	# 3. Create Panel
@@ -94,7 +233,7 @@ func _setup_upgrades_ui():
 	# Close Button
 	var close = Button.new()
 	close.text = "Close"
-	close.position = Vector2((panel_width - 120) / 2, panel_height - 50)
+	close.position = Vector2((panel_width - 120) / 2.0, panel_height - 50)
 	close.size = Vector2(120, 40)
 	close.pressed.connect(func(): upgrades_panel.visible = false)
 	upgrades_panel.add_child(close)
@@ -227,7 +366,8 @@ func _try_buy_upgrade(id: String):
 		_update_upgrades_ui()
 
 func _on_start_button_pressed():
-	get_tree().change_scene_to_file("res://Scenes/game.tscn")
+	main_menu.visible = false
+	character_panel.visible = true
 
 func _on_quit_button_pressed():
 	get_tree().quit()

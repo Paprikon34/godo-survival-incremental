@@ -119,9 +119,11 @@ func _ready():
 	for i in range(option_buttons.size()):
 		option_buttons[i].pressed.connect(_on_upgrade_selected.bind(i))
 		
-	# Initialize starting weapon in upgrade counts
-	upgrade_counts["magic_shotgun"] = 1
+	# Initialize starting weapon from selected character
+	upgrade_counts[Global.selected_character] = 1
+	UpgradeDB.apply_upgrade(player, Global.selected_character)
 	update_upgrade_list_ui()
+	Global.console_log("Started game with character: %s on map: %s" % [Global.selected_character, Global.selected_map])
 
 	chest_ok_button.pressed.connect(_on_chest_ok_pressed)
 	
@@ -371,7 +373,7 @@ func on_chest_collected():
 	
 	# Ensure upgrade_counts is correctly populated with at least the starting weapon if missing
 	if upgrade_counts.is_empty():
-		upgrade_counts["magic_shotgun"] = 1
+		upgrade_counts[Global.selected_character] = 1
 		
 	# Get list of existing upgrades (excluding heal)
 	var available_upgrades = []
@@ -381,7 +383,7 @@ func on_chest_collected():
 			
 	# If for some reason it's still empty, just grab one from DB
 	if available_upgrades.is_empty():
-		available_upgrades.append("magic_shotgun")
+		available_upgrades.append(Global.selected_character)
 			
 	if available_upgrades.size() > 0:
 		var num_rewards = 1
