@@ -1,4 +1,4 @@
-[gd_scene format=3 uid="uid://eak3l2m4n5q8"]
+[gd_scene load_steps=18 format=3 uid="uid://eak3l2m4n5q8"]
 
 [ext_resource type="Script" uid="uid://dywhcvees1ciu" path="res://Scripts/enemy.gd" id="1_script"]
 [ext_resource type="Texture2D" uid="uid://cvbm38l863mp0" path="res://Sprites/Enemy_Galore_I/Golem/No Armor/Golem_Full.png" id="2_move"]
@@ -104,7 +104,7 @@ animations = [{
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_1"]
 size = Vector2(80, 80)
 
-[node name="Enemy" type="CharacterBody2D" unique_id=1272255057 groups=["enemy"]]
+[node name="Enemy" type="CharacterBody2D" groups=["enemy"]]
 scale = Vector2(1.6400006, 1.6400006)
 collision_layer = 2
 script = ExtResource("1_script")
@@ -113,13 +113,13 @@ health = 30.0
 damage = 15.0
 xp_reward = 25.0
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=736496635]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 scale = Vector2(2.5, 2.5)
 sprite_frames = SubResource("SpriteFrames_tank")
 animation = &"move"
 autoplay = "move"
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=172061967]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 10)
 shape = SubResource("RectangleShape2D_1")
